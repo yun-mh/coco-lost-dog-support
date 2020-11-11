@@ -16,6 +16,10 @@ const DogContainer = ( location ) => {
     useEffect(() => {
         if (location.location.search !== "") {
             const userId = location.location.search.split("?owner=")[1];
+            
+            // check user
+
+            // if check result is true
             setUser(userId);
         }
     }, [location])

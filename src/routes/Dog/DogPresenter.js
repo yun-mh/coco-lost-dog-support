@@ -4,6 +4,7 @@ import moment from "moment";
 import Header from "../../components/Header";
 import Loader from "../../components/Loader";
 import { useHistory } from "react-router-dom";
+import Collapse from "../../components/Collapse";
 
 const DogPresenter = ({ user, loading, data }) => {
   const history = useHistory();
@@ -106,87 +107,8 @@ const DogPresenter = ({ user, loading, data }) => {
               ) : (
                 <div>
                   <div class="w-full my-4">
-                    <div class="rounded-sm">
-                      <div
-                        class="border border-b-0 bg-gray-100 px-10 py-6"
-                        id="headingOne"
-                      >
-                        <button
-                          class="underline text-blue-500 hover:text-blue-700 focus:outline-none"
-                          type="button"
-                        >
-                          Collapsible Group Item #1
-                        </button>
-                      </div>
-                      <div x-show="show" class="border border-b-0 px-10 py-6">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                      </div>
-                    </div>
-                    <div class="rounded-sm">
-                      <div
-                        class="border border-b-0 bg-gray-100 px-10 py-6"
-                        id="headingOne"
-                      >
-                        <button
-                          class="underline text-blue-500 hover:text-blue-700 focus:outline-none"
-                          type="button"
-                        >
-                          Collapsible Group Item #2
-                        </button>
-                      </div>
-                      <div x-show="show" class="px-10 py-6">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                      </div>
-                    </div>
-                    <div class="rounded-sm">
-                      <div
-                        class="border bg-gray-100 px-10 py-6"
-                        id="headingOne"
-                      >
-                        <button
-                          class="underline text-blue-500 hover:text-blue-700 focus:outline-none"
-                          type="button"
-                        >
-                          Collapsible Group Item #3
-                        </button>
-                      </div>
-                      <div x-show="show" class="border px-10 py-6">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                      </div>
-                    </div>
+                    <Collapse />
+                    <Collapse />
                   </div>
                 </div>
               )}

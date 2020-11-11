@@ -4,6 +4,7 @@ import { Calendar, Info, PenTool, X } from "react-feather";
 import tw from "twin.macro";
 import moment from "moment";
 import Loader from "./Loader";
+import CreatePostModal from "./CreatePostModal";
 
 const NavContainer = styled.nav`
   ${tw`fixed w-full mx-auto bg-white`}
@@ -73,9 +74,18 @@ const Gender = styled.span`
 
 const Header = ({ user, loading, data }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [createModalIsOpen, setCreateIsOpen] = useState(false);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
+  };
+
+  const openCreateModal = () => {
+    setCreateIsOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setCreateIsOpen(false);
   };
 
   return (
@@ -108,20 +118,14 @@ const Header = ({ user, loading, data }) => {
           {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <div className="flex hidden md:block">
-                <a
-                  href="#"
-                  className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out"
-                >
+                <button onClick={openCreateModal} className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
                   記事作成
-                </a>
+                </button>
               </div>
               <div className="flex md:hidden">
-                <a
-                  href="#"
-                  className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out"
-                >
+                <button onClick={openCreateModal} className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
                   <PenTool />
-                </a>
+                </button>
               </div>
             </div>
           )}
@@ -193,6 +197,10 @@ const Header = ({ user, loading, data }) => {
           </MenuList>
         )}
       </MobileMenu>
+      <CreatePostModal
+        modalIsOpen={createModalIsOpen}
+        closeModal={closeCreateModal}
+      />
     </NavContainer>
   );
 };

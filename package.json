@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "apollo-cache-persist": "^0.1.1",
     "graphql": "^15.4.0",
+    "is-mobile": "^2.2.2",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
