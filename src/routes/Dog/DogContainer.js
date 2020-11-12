@@ -9,22 +9,17 @@ const DogContainer = ( location ) => {
 
     const [user, setUser] = useState("");
 
-    console.log(dogId)
-
     console.log(location.location)
 
-    useEffect(() => {
-        if (location.location.search !== "") {
-            const userId = location.location.search.split("?owner=")[1];
-            
-            // check user
-
-            // if check result is true
-            setUser(userId);
-        }
-    }, [location])
-
+    
     const { loading, data } = useQuery(VIEW_DOG, { variables: { id: dogId } });
+    
+    useEffect(() => {
+        if (data !== undefined && location.location.search !== "") {
+            const userId = location.location.search.split("?owner=")[1];
+            data.viewDog.user.id === userId ? setUser(userId) : setUser("");
+        }
+    }, [location, data]);
 
     return <DogPresenter user={user} loading={loading} data={data} />
 }
