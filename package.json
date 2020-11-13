@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^12.1.10",
     "apollo-cache-persist": "^0.1.1",
     "date-fns": "^2.16.1",
+    "formik": "^2.2.5",
     "graphql": "^15.4.0",
     "is-mobile": "^2.2.2",
     "moment": "^2.29.1",

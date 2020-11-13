@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import { X } from "react-feather";
 import Modal from "react-modal";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
 import ImageUploader from "react-images-upload";
 import TextareaAutosize from "react-autosize-textarea";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import DatePicker from "./DatePicker";
 import Button from "./Button";
+import Field from "./Field";
 
 Modal.setAppElement("#root");
 
@@ -55,14 +58,119 @@ const CreateThreadModal = ({
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
-  const [birthdate, setBirthdate] = useState(new Date());
-  const [pictures, setPictures] = useState([]);
+  const [lostWhen, setLostWhen] = useState(new Date());
+  const [images, setImages] = useState([]);
 
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
-  
-  const onDrop = picture => {
-    setPictures([...pictures, picture]);
+
+  const validate = (values) => {
+    const errors = {};
+    if (!values.name) {
+      errors.name = "犬の名前を入力してください。";
+    }
+    if (!values.breed) {
+      errors.breed = "犬種を入力してください。";
+    }
+    if (!values.age) {
+      errors.age = "犬の年齢を入力してください。";
+    }
+    if (!values.lostWhere) {
+      errors.lostWhere = "迷子になった場所のおおよその住所を入力してください。";
+    }
+    if (!values.owner) {
+      errors.owner = "飼い主の名前を入力してください。";
+    }
+    if (!values.phone) {
+      errors.phone = "連絡先を入力してください。";
+    }
+
+    return errors;
   };
+
+  // const onSubmit = async () => {
+  //   if (formik.values.name === nameP && formik.values.breed === breedP && formik.values.birthdate === birthdateP && formik.values.gender === genderP && formik.values.image === undefined) {
+  //     closeModal();
+  //     return;
+  //   }
+
+  //   if (formik.values.name !== "" && formik.values.breed !== "") {
+  //     setLoading(true);
+
+  //     let location = "";
+  //     if (image !== undefined) {
+  //       const formData = new FormData();
+  //       formData.append("file", image);
+  //       const {
+  //         data: { locations },
+  //       } = await axios.post(
+  //         "https://api-coco.herokuapp.com/api/upload",
+  //         formData,
+  //         {
+  //           headers: {
+  //             "content-type": "multipart/form-data",
+  //           },
+  //         }
+  //       );
+  //       location = locations[0];
+  //     }
+
+  //     try {
+  //       const {
+  //         data: { editDog },
+  //       } = await modifyDogMutation({
+  //         variables: {
+  //           id: dogId,
+  //           image: location !== "" ? location : avatar,
+  //           name: formik.values.name,
+  //           breed: formik.values.breed,
+  //           gender: formik.values.gender,
+  //           birthdate: formik.values.birthdate,
+  //           action: "EDIT",
+  //         },
+  //       });
+  //       if (editDog) {
+  //         closeModal();
+  //         toast.success("😄 情報を修正しました！");
+  //       }
+  //     } catch (e) {
+  //       toast.error(`😢 ${e.message}`);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
+
+  const formik = useFormik({
+    initialValues: {
+      name,
+      breed,
+      gender,
+      age,
+      size,
+      weight,
+      feature,
+      images,
+      lostWhen,
+      lostWhere,
+      owner,
+      phone,
+      email
+    },
+    validate,
+    onSubmit,
+  });
+  
+  useEffect(() => {
+    formik.values.lostWhen = lostWhen;
+  }, [lostWhen, formik.values.lostWhen])
+  
+  const onDrop = image => {
+    setImages([...images, image]);
+  };
+
+  useEffect(() => {
+    formik.values.images = images;
+  }, [images, formik.values.images])
 
   return (
     <Modal
@@ -89,14 +197,14 @@ const CreateThreadModal = ({
             <ItemLabel for="grid-first-name">
               犬名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4 mb-3" id="grid-first-name" type="text" placeholder="例）ココ" />
+            <Field placeholder="例）ココ" type="text" name="name" errors="" onChange={formik.handleChange} value={formik.values.} />
             {/* <p class="text-red text-xs italic">Please fill out this field.</p> */}
           </DivisionItem>
           <DivisionItem>
             <ItemLabel for="grid-last-name">
               犬種(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="text" placeholder="例）プードル" />
+            <Field placeholder="例）プードル" type="text" name="breed" errors="" onChange={formik.handleChange} value={formik.values.} />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel for="grid-last-name">
@@ -119,7 +227,8 @@ const CreateThreadModal = ({
             <ItemLabel for="grid-first-name">
               年齢(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4 mb-3" id="grid-first-name" type="number" min="0" />
+            <Field type="number" min="0" name="age" errors="" onChange={formik.handleChange} value={formik.values.} />
+            {/* <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4 mb-3" id="grid-first-name" type="number" min="0" /> */}
             {/* <p class="text-red text-xs italic">Please fill out this field.</p> */}
           </DivisionItem>
           <DivisionItem>
@@ -141,7 +250,8 @@ const CreateThreadModal = ({
             <ItemLabel for="grid-last-name">
               体重(kg)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="number" min="0" step="0.5" />
+            <Field type="number" min="0" step="0.5" name="weight" errors="" onChange={formik.handleChange} value={formik.values.} />
+            {/* <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="number" min="0" step="0.5" /> */}
           </DivisionItem>
         </DivisionContainer>
 
@@ -187,14 +297,14 @@ const CreateThreadModal = ({
             <ItemLabel for="grid-last-name">
               迷子になった日時(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <DatePicker name="birthdate" birthdate={birthdate} setBirthdate={setBirthdate} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
+            <DatePicker name="lostWhen" birthdate={lostWhen} setBirthdate={setLostWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel for="grid-password">
               迷子になった場所(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="grid-password" type="text" placeholder="愛知県名古屋市中区正木１丁目" />
-            <p class="text-grey-dark text-xs italic">※ 番地などおおよその住所を記入してください。</p>
+            <Field placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="lostWhere" errors="" onChange={formik.handleChange} value={formik.values.} />
+            {/* <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="grid-password" type="text" placeholder="" /> */}
           </DivisionItem>
         </DivisionContainer>
 
@@ -206,20 +316,23 @@ const CreateThreadModal = ({
             <ItemLabel for="grid-first-name">
               飼い主名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4" id="grid-first-name" type="text" placeholder="例）犬山犬男" />
-            {/* <p class="text-red text-xs italic">Please fill out this field.</p> */}
+            <Field placeholder="例）犬山犬男" type="text" name="owner" errors="" onChange={formik.handleChange} value={formik.values.} />
+
+            {/* <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4" id="grid-first-name" type="text" placeholder="例）" /> */}
           </DivisionItem>
           <DivisionItem>
             <ItemLabel for="grid-last-name">
               連絡先(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="text" placeholder="例）070-1234-5678" />
+            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors="" onChange={formik.handleChange} value={formik.values.} />
+            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="text" placeholder="" />
           </DivisionItem>
           <DivisionItem class="md:w-1/3 px-3">
             <ItemLabel for="grid-last-name">
               メールアドレス
             </ItemLabel>
-            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="email" placeholder="例）inuski@yahoo.co.jp" />
+            <Field placeholder="例）inuski@yahoo.co.jp" type="email" name="email" errors="" onChange={formik.handleChange} value={formik.values.} />
+            {/* <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="grid-last-name" type="email" placeholder="例）inuski@yahoo.co.jp" /> */}
           </DivisionItem>
         </DivisionContainer>
 
