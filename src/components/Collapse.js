@@ -1,20 +1,46 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import tw from "twin.macro";
+import AddReportModal from "./AddReportModal";
+import Button from "./Button";
+
+const CollapseContainer = styled.div`
+    ${tw`rounded-sm`}
+`
+
+const CollapseTitleContainer = styled.div`
+    ${tw`flex justify-between border border-b-0 bg-gray-100 px-10 py-3`}
+`
+
+const CollapseTitle = styled.button`
+    ${tw`underline text-blue-500 hover:text-blue-700 focus:outline-none`}
+`
 
 const Collapse = () => {
     const [isOpen, setIsOpen] = useState();
+    const [createModalIsOpen, setCreateIsOpen] = useState(false);
 
+    
     const toggleOpen = () => {
         setIsOpen(!isOpen);
     }
+    
+    const openCreateModal = () => {
+      setCreateIsOpen(true);
+    };
+  
+    const closeCreateModal = () => {
+      setCreateIsOpen(false);
+    };
 
     return (
-        <div class="rounded-sm">
-            <div class="border border-b-0 bg-gray-100 px-10 py-6" id="headingOne">
-                <button onClick={toggleOpen} class="underline text-blue-500 hover:text-blue-700 focus:outline-none" type="button">
+        <CollapseContainer>
+            <CollapseTitleContainer>
+                <CollapseTitle onClick={toggleOpen} type="button">
                     Collapsible Group Item #1
-                </button>
-            </div>
+                </CollapseTitle>
+                <Button use="accent" title="通報する" onClick={openCreateModal} />
+            </CollapseTitleContainer>
             <div class={isOpen ? "border border-b-0 px-10 py-6" : "hidden"}>
                 Anim pariatur cliche reprehenderit, enim eiusmod high
                 life accusamus terry richardson ad squid. 3 wolf moon
@@ -29,7 +55,11 @@ const Collapse = () => {
                 you probably haven't heard of them accusamus labore
                 sustainable VHS.
             </div>
-        </div>
+            <AddReportModal
+                modalIsOpen={createModalIsOpen}
+                closeModal={closeCreateModal}
+            />
+        </CollapseContainer>
     )
 }
 

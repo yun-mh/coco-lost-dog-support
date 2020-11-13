@@ -15,6 +15,7 @@ const materialTheme = createMuiTheme({
 });
 
 const DatePicker = ({
+    className,
     birthdate,
     setBirthdate,
     open,
@@ -22,7 +23,7 @@ const DatePicker = ({
   }) => {
     return (
       <>
-        <CalendarButton type="button" title={moment(birthdate).format("YYYY-MM-DD HH:mm")} onClick={() => toggleOpen(true)} />
+        <CalendarButton className={className} type="button" title={moment(birthdate).format("YYYY-MM-DD HH:mm")} onClick={() => toggleOpen(true)} />
         <ThemeProvider theme={materialTheme}>
           <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ja}>
             <Picker

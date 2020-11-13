@@ -10,13 +10,13 @@ const Btn = styled.button`
   ${tw`appearance-none block w-full text-gray-800 border border-gray-300 rounded py-3 px-4 mb-3`}
 `;
 
-const CalendarButton = ({ loading, type, title, accent = false, onClick }) => {
+const CalendarButton = ({ className, loading, type, title, accent = false, onClick }) => {
   return (
     <Container>
       <Btn
         type={type}
         onClick={onClick}
-        className={accent ? "bg-primary" : "border border-gray-400"}
+        className={accent ? `bg-primary ${className}` : `border border-gray-400 ${className}`}
       >
         <span className={accent ? "text-white" : "text-gray-600"}>
             {title}

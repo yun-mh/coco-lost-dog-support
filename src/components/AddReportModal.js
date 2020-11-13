@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
-import { X } from "react-feather";
+import { Compass, X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
+import ButtonLoader from "./ButtonLoader";
 
 Modal.setAppElement("#root");
 
@@ -41,18 +42,22 @@ const DivisionContainer = styled.div`
 `;
 
 const DivisionItem = styled.div`
-  ${tw`md:w-full px-3 mb-6 md:mb-0`}
+  ${tw`px-3 mb-6 md:mb-0`}
 `;
 
 const ItemLabel = styled.label`
   ${tw`block uppercase tracking-wide text-gray-700 text-xs font-bold mb-1`}
 `;
 
+const CompassButton = styled.div`
+  ${tw`flex items-center justify-center ml-3 w-24 h-auto bg-secondary hover:bg-secondary-light mb-1 rounded cursor-pointer`}
+`;
+
 const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
-const CreateThreadModal = ({
+const AddReportModal = ({
   modalIsOpen,
   closeModal
 }) => {
@@ -60,6 +65,11 @@ const CreateThreadModal = ({
 
   const [lostWhen, setLostWhen] = useState(new Date());
   const [images, setImages] = useState([]);
+
+  const [compassLoading, setCompassLoading] = useState(false);
+  const [lat, setLat] = useState(false);
+  const [lon, setLon] = useState(false);
+  const [locationErr, setLocationErr] = useState(false);
 
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
@@ -164,14 +174,48 @@ const CreateThreadModal = ({
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values.lostWhen])
-  
-  const onDrop = image => {
-    setImages([...images, image]);
-  };
 
   useEffect(() => {
     formik.values.images = images;
   }, [images, formik.values.images])
+
+  const getCurrentLocation = () => {
+    async function success(position) {
+      const latitude  = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${ENV.googleApiKey}&language=ja`
+      );
+      const resData = await res.json();
+      const address = resData.results[0].formatted_address.split(" ")[1];
+      
+      formik.values.
+
+      setLat(latitude);
+      setLon(longitude);
+      setCompassLoading(false);
+    }
+
+    function error() {
+      setLocationErr(true);
+    }
+
+    setLocationErr(false);
+
+    if(navigator.geolocation) {
+      setCompassLoading(true);
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  };
+
+  const plotCurrentLocationOnMap = () => {
+    if (lat !== null && lon !== null) {
+
+    } else {
+
+    }
+  };
 
   return (
     <Modal
@@ -192,142 +236,65 @@ const CreateThreadModal = ({
       <ModalContainer onSubmit={formik.handleSubmit}>
         <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
 
-        <DivisionTitle>犬情報</DivisionTitle>  
+        <DivisionTitle>通報内容</DivisionTitle>
         <DivisionContainer>
-          <DivisionItem>
-            <ItemLabel htmlFor="name">
-              犬名(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <Field placeholder="例）ココ" type="text" name="name" errors={formik.errors.name} onChange={formik.handleChange} value={formik.values.name} />
-          </DivisionItem>
-          <DivisionItem>
-            <ItemLabel htmlFor="breed">
-              犬種(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <Field placeholder="例）プードル" type="text" name="breed" errors={formik.errors.breed} onChange={formik.handleChange} value={formik.values.breed} />
-          </DivisionItem>
-          <DivisionItem>
-            <ItemLabel htmlFor="gender">
-              性別(<span className="text-red-500">*</span>)
+          <DivisionItem className="w-full">
+            <ItemLabel htmlFor="email">
+              対応タイプ(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div class="relative">
               <select class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="gender">
-                <option>男</option>
-                <option>女</option>
+                <option>発見のみ</option>
+                <option>犬を直接保護中</option>
+                <option>他の所に預けた</option>
               </select>
               <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
               </div>
             </div>
           </DivisionItem>
-        </DivisionContainer>
 
-        <DivisionContainer>
-          <DivisionItem>
-            <ItemLabel htmlFor="age">
-              年齢(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <Field type="number" min="0" name="age" errors={formik.errors.age} onChange={formik.handleChange} value={formik.values.age} />
-          </DivisionItem>
-          <DivisionItem>
-            <ItemLabel htmlFor="size">
-              大きさ(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <div class="relative">
-              <select class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="size">
-                <option>小型</option>
-                <option>中型</option>
-                <option>大型</option>
-              </select>
-              <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-              </div>
-            </div>
-          </DivisionItem>
-          <DivisionItem>
-            <ItemLabel htmlFor="weight">
-              体重(kg)
-            </ItemLabel>
-            <Field type="number" min="0" step="0.5" name="weight" errors={formik.errors.weight} onChange={formik.handleChange} value={formik.values.weight} />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <DivisionContainer>
-          <DivisionItem>
-            <ItemLabel htmlFor="feature">
-              特徴
-            </ItemLabel>
-            <TextareaAutosize
-              className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
-              name="feature"
-              maxRows={3}
-              // value={newComment.value}
-              // onChange={newComment.onChange}
-              placeholder="例）迷子になった当時の髪型、服装、首輪、鑑札など、犬を識別できる特徴があれば記入してください。"
-              async={true}
-            />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <DivisionContainer>
-          <DivisionItem>
-            <ItemLabel htmlFor="images">
-              写真アップロード(jpg・png形式)
-            </ItemLabel>
-            <ImageUploader
-              name="images"
-              withIcon={true}
-              withPreview={true}
-              onChange={onDrop}
-              withLabel={false}
-              buttonText="写真をアップロード"         
-              imgExtension={[".jpg", ".png"]}
-              fileTypeError="jpg, png形式のみアップロード可能です。"
-              maxFileSize={5242880}
-            />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <Divide />
-
-        <DivisionTitle>迷子情報</DivisionTitle>
-        <DivisionContainer>
-          <DivisionItem>
+          <DivisionItem className="w-full">
             <ItemLabel htmlFor="lostWhen">
-              迷子になった日時(<span className="text-red-500">*</span>)
+              発見日時(<span className="text-red-500">*</span>)
             </ItemLabel>
             <DatePicker name="lostWhen" className="bg-gray-100" birthdate={lostWhen} setBirthdate={setLostWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
           </DivisionItem>
-          <DivisionItem>
+        </DivisionContainer>
+
+        <DivisionContainer>
+          <DivisionItem className="w-full">
             <ItemLabel htmlFor="lostWhere">
-              迷子になった場所(<span className="text-red-500">*</span>)
+              発見場所(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="lostWhere" errors={formik.errors.lostWhere} onChange={formik.handleChange} value={formik.values.lostWhere} />
+            <div className="flex">
+              <Field placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="lostWhere" errors={formik.errors.lostWhere} onChange={formik.handleChange} value={formik.values.lostWhere} />
+              <CompassButton onClick={getCurrentLocation} >
+                { !compassLoading ? <Compass className="text-gray-700" /> : <ButtonLoader />}
+              </CompassButton>
+            </div>
+            { locationErr && <p className="text-sm text-red-500 italic mb-2">位置情報取得に失敗しました。</p> }
+            <Button title="設定" onClick={() => {}} />
           </DivisionItem>
         </DivisionContainer>
 
         <Divide />
 
-        <DivisionTitle>飼い主情報</DivisionTitle>
+        <DivisionTitle>通報者情報</DivisionTitle>
         <DivisionContainer>
-          <DivisionItem>
+          <DivisionItem className="w-full">
             <ItemLabel htmlFor="owner">
-              飼い主名(<span className="text-red-500">*</span>)
+            　通報者名(<span className="text-red-500">*</span>)
             </ItemLabel>
             <Field placeholder="例）犬山犬男" type="text" name="owner" errors={formik.errors.owner} onChange={formik.handleChange} value={formik.values.owner} />
           </DivisionItem>
-          <DivisionItem>
+          <DivisionItem className="w-full">
             <ItemLabel htmlFor="phone">
               連絡先(<span className="text-red-500">*</span>)
             </ItemLabel>
             <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={formik.errors.phone} onChange={formik.handleChange} value={formik.values.phone} />
           </DivisionItem>
-          <DivisionItem class="md:w-1/3 px-3">
-            <ItemLabel htmlFor="email">
-              メールアドレス
-            </ItemLabel>
-            <Field placeholder="例）inuski@yahoo.co.jp" type="email" name="email" errors={formik.errors.email} onChange={formik.handleChange} value={formik.values.email} />
-          </DivisionItem>
+          
         </DivisionContainer>
 
         <div className="flex justify-around mt-10 mb-5">
@@ -340,4 +307,4 @@ const CreateThreadModal = ({
   );
 };
 
-export default CreateThreadModal;
+export default AddReportModal;

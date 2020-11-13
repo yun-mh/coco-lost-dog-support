@@ -1,10 +1,8 @@
 import React from "react";
-import styled from "styled-components";
-import tw from "twin.macro";
 
 const Field = ({ 
-    className = "appearance-none block w-full bg-gray-100 text-gray-800 border border-red rounded py-3 px-4 mb-3", 
-    errorClassName = "", 
+    className = "appearance-none block w-full bg-gray-100 text-gray-800 border border-red rounded py-3 px-4 mb-1", 
+    errorClassName = "text-sm text-red-500 italic mb-2", 
     type, 
     name, 
     errors, 
@@ -15,7 +13,7 @@ const Field = ({
 }) => {
   return (
     <>  
-      <input className={className} type={type} name={name} onChange={onChange} value={value} placeholder={placeholder} {...props} />
+      <input className={errors !== undefined ? className + " border-red-500" : className } type={type} name={name} onChange={onChange} value={value} placeholder={placeholder} {...props} />
       <p className={errorClassName}>{errors}</p>
     </>
   );
