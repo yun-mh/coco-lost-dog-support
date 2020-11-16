@@ -9,9 +9,6 @@ const DogContainer = ( location ) => {
 
     const [user, setUser] = useState("");
 
-    console.log(location.location)
-
-    
     const { loading, data } = useQuery(VIEW_DOG, { variables: { id: dogId } });
     
     useEffect(() => {

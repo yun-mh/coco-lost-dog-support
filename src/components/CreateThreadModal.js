@@ -7,10 +7,13 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import ImageUploader from "react-images-upload";
 import TextareaAutosize from "react-autosize-textarea";
+import axios from "axios";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
+import { useMutation } from "@apollo/client";
+import { CREATE_THREAD, VIEW_DOG } from "../queries/MainQuery";
 
 Modal.setAppElement("#root");
 
@@ -54,14 +57,17 @@ const Divide = styled.hr`
 
 const CreateThreadModal = ({
   modalIsOpen,
-  closeModal
+  closeModal,
+  dogId
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
   const [lostWhen, setLostWhen] = useState(new Date());
   const [images, setImages] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
+
+  const [createThreadMutation] = useMutation(CREATE_THREAD);
 
   const validate = (values) => {
     const errors = {};
@@ -88,56 +94,74 @@ const CreateThreadModal = ({
   };
 
   const onSubmit = async () => {
-    // if (formik.values.name === nameP && formik.values.breed === breedP && formik.values.birthdate === birthdateP && formik.values.gender === genderP && formik.values.image === undefined) {
-    //   closeModal();
-    //   return;
-    // }
+    if (formik.values.name !== "" && formik.values.breed !== "" && formik.values.age !== "" && formik.values.lostWhere !== "" && formik.values.owner !== "" && formik.values.phone !== "" && formik.values.gender !== "") {
+      setLoading(true);
 
-    if (formik.values.name !== "" && formik.values.breed !== "" && formik.values.age !== "" && formik.values.lostWhere !== "" && formik.values.owner !== "" && formik.values.phone !== "") {
-      // setLoading(true);
+      console.log(images)
 
-      console.log("hey!")
-      // let location = "";
-      // if (image !== undefined) {
-      //   const formData = new FormData();
-      //   formData.append("file", image);
-      //   const {
-      //     data: { locations },
-      //   } = await axios.post(
-      //     "https://api-coco.herokuapp.com/api/upload",
-      //     formData,
-      //     {
-      //       headers: {
-      //         "content-type": "multipart/form-data",
-      //       },
-      //     }
-      //   );
-      //   location = locations[0];
-      // }
+      let imageLocations = [];
+      if (images.length >= 1) {
+        const formData = new FormData();
+        for (const image of images) {
+          formData.append("file", image);
+        }
+        let locationss;
+        try {
+          const {
+            data: { locations }
+          } = await axios.post(
+            "https://api-coco.herokuapp.com/api/upload",
+            formData,
+            {
+              headers: {
+                "content-type": "multipart/form-data",
+              },
+            }
+          );
+          locationss = locations
+        } catch(e) {
+          console.log(e)
+        }
+        console.log(locationss)
+        for (const location of locationss) {
+          imageLocations.push(location);
+        }
+      }
 
-      // try {
-      //   const {
-      //     data: { editDog },
-      //   } = await modifyDogMutation({
-      //     variables: {
-      //       id: dogId,
-      //       image: location !== "" ? location : avatar,
-      //       name: formik.values.name,
-      //       breed: formik.values.breed,
-      //       gender: formik.values.gender,
-      //       birthdate: formik.values.birthdate,
-      //       action: "EDIT",
-      //     },
-      //   });
-      //   if (editDog) {
-      //     closeModal();
-      //     toast.success("😄 情報を修正しました！");
-      //   }
-      // } catch (e) {
-      //   toast.error(`😢 ${e.message}`);
-      // } finally {
-      //   setLoading(false);
-      // }
+      try {
+        console.log("imageLocations:" + imageLocations)
+        const {
+          data: { createThread },
+        } = await createThreadMutation({
+          variables: {
+            dogId,
+            name: formik.values.name,
+            breed: formik.values.breed,
+            age: formik.values.age,
+            gender: formik.values.gender,
+            size: formik.values.size,
+            weight: formik.values.weight,
+            feature: formik.values.feature,
+            images: [...imageLocations],
+            lostWhen: formik.values.lostWhen,
+            lostWhere: formik.values.lostWhere,
+            phone: formik.values.phone,
+            email: formik.values.email,
+          },
+          refetchQueries: () => [
+            { query: VIEW_DOG, variables: { id: dogId } },
+          ], 
+        });
+        if (createThread) {
+          closeModal();
+          toast.success("🙂 迷子情報の初期設定を完了しました！");
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error(`😢 ${e.message}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -145,9 +169,9 @@ const CreateThreadModal = ({
     initialValues: {
       name: "",
       breed: "",
-      gender: "",
+      gender: "male",
       age: "",
-      size: "",
+      size: "small",
       weight: "",
       feature: "",
       images,
@@ -163,15 +187,17 @@ const CreateThreadModal = ({
   
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
-  }, [lostWhen, formik.values.lostWhen])
+  }, [lostWhen, formik.values])
+  
+  
+  useEffect(() => {
+    formik.values.images = images;
+  }, [images, formik.values])
   
   const onDrop = image => {
     setImages([...images, image]);
   };
 
-  useEffect(() => {
-    formik.values.images = images;
-  }, [images, formik.values.images])
 
   return (
     <Modal
@@ -211,9 +237,9 @@ const CreateThreadModal = ({
               性別(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div class="relative">
-              <select class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="gender">
-                <option>男</option>
-                <option>女</option>
+              <select value={formik.values.gender} onChange={formik.handleChange} name="gender" class="block appearance-none w-full bg-gray-100 border py-3 px-4 pr-8 rounded">
+                <option value="male">男</option>
+                <option value="female">女</option>
               </select>
               <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -234,10 +260,10 @@ const CreateThreadModal = ({
               大きさ(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div class="relative">
-              <select class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="size">
-                <option>小型</option>
-                <option>中型</option>
-                <option>大型</option>
+              <select value={formik.values.maxFileSize} onChange={formik.handleChange} name="size" class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded">
+                <option value="small">小型</option>
+                <option value="medium">中型</option>
+                <option value="big">大型</option>
               </select>
               <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -262,7 +288,7 @@ const CreateThreadModal = ({
               name="feature"
               maxRows={3}
               // value={newComment.value}
-              // onChange={newComment.onChange}
+              onChange={formik.handleChange}
               placeholder="例）迷子になった当時の髪型、服装、首輪、鑑札など、犬を識別できる特徴があれば記入してください。"
               async={true}
             />
@@ -332,7 +358,7 @@ const CreateThreadModal = ({
 
         <div className="flex justify-around mt-10 mb-5">
           <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
-          <Button className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
+          <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
         </div>
 
       </ModalContainer>

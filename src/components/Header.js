@@ -200,6 +200,7 @@ const Header = ({ user, loading, data }) => {
       <CreateThreadModal
         modalIsOpen={createModalIsOpen}
         closeModal={closeCreateModal}
+        dogId={data?.viewDog?.id}
       />
     </NavContainer>
   );
