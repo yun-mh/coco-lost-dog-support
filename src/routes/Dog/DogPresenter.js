@@ -1,19 +1,17 @@
 import React from "react";
-import { Calendar, Smile } from "react-feather";
+import { Calendar, Meh, Smile } from "react-feather";
 import moment from "moment";
 import Header from "../../components/Header";
 import Loader from "../../components/Loader";
 import { useHistory } from "react-router-dom";
 import Collapse from "../../components/Collapse";
 
-const DogPresenter = ({ user, loading, data }) => {
+const DogPresenter = ({ dogId, user, loading, data }) => {
   const history = useHistory();
 
   if (!loading && data === undefined) {
     history.push("/");
   }
-
-  console.log(data);
 
   return (
     <>
@@ -105,13 +103,20 @@ const DogPresenter = ({ user, loading, data }) => {
                   </span>
                 </div>
               ) : (
-                <div>
-                  <div class="w-full my-4">
-                    <Collapse />
-                    <Collapse />
-                  </div>
-                </div>
-              )}
+                data.viewDog.lostDogThreads.length > 0 ? data.viewDog.lostDogThreads.map(thread => (
+                    <div key={thread.id} className="w-full my-4">
+                      <Collapse dogId={dogId} thread={thread} />
+                    </div>
+                  )) : (
+                    <div className="h-64 flex items-center justify-center">
+                      <Meh size={40} className="text-primary mr-3" />
+                      <span className="text-xl text-gray-500">
+                        迷子情報を登録してください。
+                      </span>
+                    </div>
+                  )
+                )
+              }
             </div>
           </>
         ) : (

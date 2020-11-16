@@ -4,6 +4,7 @@ import tw from "twin.macro";
 import { X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
+import moment from "moment";
 import { toast } from "react-toastify";
 import ImageUploader from "react-images-upload";
 import TextareaAutosize from "react-autosize-textarea";
@@ -56,6 +57,7 @@ const Divide = styled.hr`
 `;
 
 const CreateThreadModal = ({
+  data,
   modalIsOpen,
   closeModal,
   dogId
@@ -97,19 +99,16 @@ const CreateThreadModal = ({
     if (formik.values.name !== "" && formik.values.breed !== "" && formik.values.age !== "" && formik.values.lostWhere !== "" && formik.values.owner !== "" && formik.values.phone !== "" && formik.values.gender !== "") {
       setLoading(true);
 
-      console.log(images)
-
       let imageLocations = [];
       if (images.length >= 1) {
         const formData = new FormData();
-        for (const image of images) {
-          formData.append("file", image);
+        for (let image of images) {
+          const file = image[0]
+          formData.append("file", file);
         }
-        let locationss;
-        try {
-          const {
-            data: { locations }
-          } = await axios.post(
+        const {
+          data: { locations }
+        } = await axios.post(
             "https://api-coco.herokuapp.com/api/upload",
             formData,
             {
@@ -118,18 +117,9 @@ const CreateThreadModal = ({
               },
             }
           );
-          locationss = locations
-        } catch(e) {
-          console.log(e)
-        }
-        console.log(locationss)
-        for (const location of locationss) {
-          imageLocations.push(location);
-        }
+          imageLocations = [...locations];
       }
-
       try {
-        console.log("imageLocations:" + imageLocations)
         const {
           data: { createThread },
         } = await createThreadMutation({
@@ -145,6 +135,7 @@ const CreateThreadModal = ({
             images: [...imageLocations],
             lostWhen: formik.values.lostWhen,
             lostWhere: formik.values.lostWhere,
+            owner: formik.values.owner,
             phone: formik.values.phone,
             email: formik.values.email,
           },
@@ -156,10 +147,24 @@ const CreateThreadModal = ({
           closeModal();
           toast.success("🙂 迷子情報の初期設定を完了しました！");
         }
-      } catch (e) {
-        console.log(e);
+      } catch(e) {
+        console.log(e)
         toast.error(`😢 ${e.message}`);
       } finally {
+        formik.values.name = "";
+        formik.values.breed = "";
+        formik.values.age = 1;
+        formik.values.gender = "male";
+        formik.values.size = "small";
+        formik.values.weight = 0.0;
+        formik.values.feature = "";
+        formik.values.lostWhen = "";
+        formik.values.lostWhere = "";
+        formik.values.owner = "";
+        formik.values.phone = "";
+        formik.values.email = "";
+        setImages([]);
+        setLostWhen(new Date());
         setLoading(false);
       }
     }
@@ -169,12 +174,11 @@ const CreateThreadModal = ({
     initialValues: {
       name: "",
       breed: "",
+      age: 1,
       gender: "male",
-      age: "",
       size: "small",
-      weight: "",
+      weight: 0.0,
       feature: "",
-      images,
       lostWhen,
       lostWhere: "",
       owner: "",
@@ -184,20 +188,24 @@ const CreateThreadModal = ({
     validate,
     onSubmit,
   });
-  
+
+  useEffect(() => {
+    if (data !== undefined) {
+      formik.values.name = data.name;
+      formik.values.breed = data.breed;
+      formik.values.age = moment().diff(data.birthdate, "years");
+      formik.values.gender = data.gender;
+      formik.values.email = data.user.email;
+    }
+  }, [data, formik.values])
+
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values])
   
-  
-  useEffect(() => {
-    formik.values.images = images;
-  }, [images, formik.values])
-  
   const onDrop = image => {
     setImages([...images, image]);
   };
-
 
   return (
     <Modal
@@ -236,13 +244,13 @@ const CreateThreadModal = ({
             <ItemLabel htmlFor="gender">
               性別(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <div class="relative">
-              <select value={formik.values.gender} onChange={formik.handleChange} name="gender" class="block appearance-none w-full bg-gray-100 border py-3 px-4 pr-8 rounded">
+            <div className="relative">
+              <select value={formik.values.gender} onChange={formik.handleChange} name="gender" className="block appearance-none w-full bg-gray-100 border py-3 px-4 pr-8 rounded">
                 <option value="male">男</option>
                 <option value="female">女</option>
               </select>
-              <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
               </div>
             </div>
           </DivisionItem>
@@ -259,14 +267,14 @@ const CreateThreadModal = ({
             <ItemLabel htmlFor="size">
               大きさ(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <div class="relative">
-              <select value={formik.values.maxFileSize} onChange={formik.handleChange} name="size" class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded">
+            <div className="relative">
+              <select value={formik.values.size} onChange={formik.handleChange} name="size" className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded">
                 <option value="small">小型</option>
                 <option value="medium">中型</option>
                 <option value="big">大型</option>
               </select>
-              <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
               </div>
             </div>
           </DivisionItem>
@@ -287,7 +295,6 @@ const CreateThreadModal = ({
               className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
               name="feature"
               maxRows={3}
-              // value={newComment.value}
               onChange={formik.handleChange}
               placeholder="例）迷子になった当時の髪型、服装、首輪、鑑札など、犬を識別できる特徴があれば記入してください。"
               async={true}
@@ -301,7 +308,6 @@ const CreateThreadModal = ({
               写真アップロード(jpg・png形式)
             </ItemLabel>
             <ImageUploader
-              name="images"
               withIcon={true}
               withPreview={true}
               onChange={onDrop}
@@ -348,7 +354,7 @@ const CreateThreadModal = ({
             </ItemLabel>
             <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={formik.errors.phone} onChange={formik.handleChange} value={formik.values.phone} />
           </DivisionItem>
-          <DivisionItem class="md:w-1/3 px-3">
+          <DivisionItem className="md:w-1/3 px-3">
             <ItemLabel htmlFor="email">
               メールアドレス
             </ItemLabel>

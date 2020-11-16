@@ -198,6 +198,7 @@ const Header = ({ user, loading, data }) => {
         )}
       </MobileMenu>
       <CreateThreadModal
+        data={data?.viewDog}
         modalIsOpen={createModalIsOpen}
         closeModal={closeCreateModal}
         dogId={data?.viewDog?.id}

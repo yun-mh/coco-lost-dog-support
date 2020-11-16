@@ -5,13 +5,15 @@ import { Compass, X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import ImageUploader from "react-images-upload";
 import TextareaAutosize from "react-autosize-textarea";
+import { useMutation } from "@apollo/client";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
 import ButtonLoader from "./ButtonLoader";
+import GoogleMapComponent from "./Map";
+import { ADD_REPORT, VIEW_DOG } from "../queries/MainQuery";
 
 Modal.setAppElement("#root");
 
@@ -58,19 +60,23 @@ const Divide = styled.hr`
 `;
 
 const AddReportModal = ({
+  dogId,
+  threadId,
   modalIsOpen,
   closeModal
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
   const [when, setWhen] = useState(new Date());
-
+  const [loading, setLoading] = useState(false);
   const [compassLoading, setCompassLoading] = useState(false);
-  const [lat, setLat] = useState(false);
-  const [lon, setLon] = useState(false);
+  const [mapOn, setMapOn] = useState(false);
+  const [lat, setLat] = useState();
+  const [lon, setLon] = useState();
   const [locationErr, setLocationErr] = useState(false);
-
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
+
+  const [addReportMutation] = useMutation(ADD_REPORT);
 
   const validate = (values) => {
     const errors = {};
@@ -94,88 +100,73 @@ const AddReportModal = ({
   };
 
   const onSubmit = async () => {
-    // if (formik.values.name === nameP && formik.values.breed === breedP && formik.values.birthdate === birthdateP && formik.values.gender === genderP && formik.values.image === undefined) {
-    //   closeModal();
-    //   return;
-    // }
-
-    if (formik.values.location !== "" && formik.values.name !== "" && formik.values.phone !== "") {
-      // setLoading(true);
-
-      console.log("hey!")
-      // let location = "";
-      // if (image !== undefined) {
-      //   const formData = new FormData();
-      //   formData.append("file", image);
-      //   const {
-      //     data: { locations },
-      //   } = await axios.post(
-      //     "https://api-coco.herokuapp.com/api/upload",
-      //     formData,
-      //     {
-      //       headers: {
-      //         "content-type": "multipart/form-data",
-      //       },
-      //     }
-      //   );
-      //   location = locations[0];
-      // }
-
-      // try {
-      //   const {
-      //     data: { editDog },
-      //   } = await modifyDogMutation({
-      //     variables: {
-      //       id: dogId,
-      //       image: location !== "" ? location : avatar,
-      //       name: formik.values.name,
-      //       breed: formik.values.breed,
-      //       gender: formik.values.gender,
-      //       birthdate: formik.values.birthdate,
-      //       action: "EDIT",
-      //     },
-      //   });
-      //   if (editDog) {
-      //     closeModal();
-      //     toast.success("😄 情報を修正しました！");
-      //   }
-      // } catch (e) {
-      //   toast.error(`😢 ${e.message}`);
-      // } finally {
-      //   setLoading(false);
-      // }
+    if (reportFormik.values.location !== "" && reportFormik.values.name !== "" && reportFormik.values.phone !== "") {
+      setLoading(true);
+      try {
+        const {
+          data: { addReport },
+        } = await addReportMutation({
+          variables: {
+            threadId,
+            reportType: reportFormik.values.reportType,
+            location: reportFormik.values.location,
+            when: reportFormik.values.when,
+            name: reportFormik.values.name,
+            phone: reportFormik.values.phone,
+            memo: reportFormik.values.memo,
+          },
+          refetchQueries: () => [
+            { query: VIEW_DOG, variables: { id: dogId } },
+          ], 
+        });
+        if (addReport) {
+          closeModal();
+          toast.success("😄 通報を追加しました！");
+        }
+      } catch (e) {
+        toast.error(`😢 ${e.message}`);
+      } finally {
+        reportFormik.values.reportType = "findOnly";
+        reportFormik.values.location = "";
+        reportFormik.values.when = "";
+        reportFormik.values.name = "";
+        reportFormik.values.phone = "";
+        reportFormik.values.memo = "";
+        setLat();
+        setLon();
+        setWhen(new Date());
+        setMapOn(false);
+        setLoading(false);
+      }
     }
   };
 
-  const formik = useFormik({
+  const reportFormik = useFormik({
     initialValues: {
-      reportType: "",
+      reportType: "findOnly",
       location: "",
       when: "",
       name: "",
       phone: "",
-      email: "",
+      memo: "",
     },
     validate,
     onSubmit,
   });
   
   useEffect(() => {
-    formik.values.when = when;
-  }, [when, formik.values.when])
+    reportFormik.values.when = when;
+  }, [when, reportFormik.values])
 
   const getCurrentLocation = () => {
     async function success(position) {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitudee}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&language=ja`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&language=ja`
       );
       const resData = await res.json();
       const address = resData.results[0].formatted_address.split(" ")[1];
       
-      formik.values.location = address;
-
-      setLat(position.coords.latitude);
-      setLon(position.coords.longitude);
+      reportFormik.values.location = address;
       setCompassLoading(false);
     }
 
@@ -191,11 +182,16 @@ const AddReportModal = ({
     }
   };
 
-  const plotCurrentLocationOnMap = () => {
-    if (lat !== null && lon !== null) {
-
-    } else {
-
+  const plotCurrentLocationOnMap = async () => {
+    setMapOn(true);
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${reportFormik.values.location}components=country:JP&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`)
+      const resData = await res.json();
+      const { geometry: { location: { lat, lng }} } = resData.results[0];
+      setLat(lat);
+      setLon(lng)
+    } catch(e) {
+      console.log(e);
     }
   };
 
@@ -215,7 +211,7 @@ const AddReportModal = ({
           <X size={30} className="text-gray-600 cursor-pointer" />
         </CloseButton>
       </ModalTitle>
-      <ModalContainer onSubmit={formik.handleSubmit}>
+      <ModalContainer onSubmit={reportFormik.handleSubmit}>
         <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
 
         <DivisionTitle>通報内容</DivisionTitle>
@@ -224,14 +220,14 @@ const AddReportModal = ({
             <ItemLabel htmlFor="reportType">
               対応タイプ(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <div class="relative">
-              <select class="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="reportType">
-                <option>発見のみ</option>
-                <option>犬を直接保護中</option>
-                <option>他の所に預けた</option>
+            <div className="relative">
+              <select value={reportFormik.values.reportType} onChange={reportFormik.handleChange} className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="reportType">
+                <option value="findOnly">発見のみ</option>
+                <option value="beingWith">犬を直接保護中</option>
+                <option value="otherPlaces">他の所に預けた</option>
               </select>
-              <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
               </div>
             </div>
           </DivisionItem>
@@ -250,16 +246,28 @@ const AddReportModal = ({
               発見場所(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div className="flex">
-              <Field hasError={false} placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="location" errors={formik.errors.location} onChange={formik.handleChange} value={formik.values.location} />
+              <Field hasError={false} placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="location" errors={reportFormik.errors.location} onChange={reportFormik.handleChange} value={reportFormik.values.location} />
               <CompassButton onClick={getCurrentLocation} >
                 { !compassLoading ? <Compass className="text-gray-700" /> : <ButtonLoader />}
               </CompassButton>
             </div>
-            { formik.errors.location !== undefined && <p className="text-sm text-red-500 italic mb-2">{formik.errors.location}</p> }
+            { reportFormik.errors.location !== undefined && <p className="text-sm text-red-500 italic mb-2">{reportFormik.errors.location}</p> }
             { locationErr && <p className="text-sm text-red-500 italic mb-2">位置情報取得に失敗しました。</p> }
-            <Button title="設定" onClick={() => {}} />
+            <Button type="button" title="設定" onClick={plotCurrentLocationOnMap} />
           </DivisionItem>
         </DivisionContainer>
+
+        {mapOn && (<DivisionContainer>
+          <GoogleMapComponent
+            isMarkerShown
+            lat={lat}
+            lng={lon}
+            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+            loadingElement={<div style={{ width: "100%", height: `100%` }} />}
+            containerElement={<div style={{ width: "100%", height: `400px`, padding: "1rem" }} />}
+            mapElement={<div style={{ width: "100%", height: `100%` }} />}
+          />
+        </DivisionContainer>)}
 
         <Divide />
 
@@ -267,24 +275,38 @@ const AddReportModal = ({
         <DivisionContainer>
           <DivisionItem className="w-full">
             <ItemLabel htmlFor="name">
-            　通報者名(<span className="text-red-500">*</span>)
+              通報者名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）犬山犬男" type="text" name="name" errors={formik.errors.name} onChange={formik.handleChange} value={formik.values.name} />
+            <Field placeholder="例）犬山犬男" type="text" name="name" errors={reportFormik.errors.name} onChange={reportFormik.handleChange} value={reportFormik.values.name} />
           </DivisionItem>
           <DivisionItem className="w-full">
             <ItemLabel htmlFor="phone">
               連絡先(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={formik.errors.phone} onChange={formik.handleChange} value={formik.values.phone} />
+            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={reportFormik.errors.phone} onChange={reportFormik.handleChange} value={reportFormik.values.phone} />
           </DivisionItem>
-          
+        </DivisionContainer>
+
+        <DivisionContainer>
+          <DivisionItem className="w-full">
+            <ItemLabel htmlFor="memo">
+              メモ
+            </ItemLabel>
+            <TextareaAutosize
+              className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
+              name="memo"
+              maxRows={3}
+              onChange={reportFormik.handleChange}
+              placeholder="例）飼い主に残したい特記事項があれば書いてください。"
+              async={true}
+            />
+          </DivisionItem>
         </DivisionContainer>
 
         <div className="flex justify-around mt-10 mb-5">
           <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
-          <Button className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
+          <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
         </div>
-
       </ModalContainer>
     </Modal>
   );

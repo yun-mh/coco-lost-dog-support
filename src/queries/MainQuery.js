@@ -15,6 +15,28 @@ export const VIEW_DOG = gql`
         avatar
         email
       }
+      lostDogThreads {
+        id
+        name
+        breed
+        age
+        gender
+        size
+        weight
+        feature
+        images {
+          url
+        }
+        lostWhen
+        lostWhere
+        phone
+        email
+        reports {
+          id
+        }
+        isClosed
+        createdAt
+      }
       isMissed
     }
   }
@@ -22,7 +44,7 @@ export const VIEW_DOG = gql`
 
 export const CREATE_THREAD = gql`
   mutation createThread(
-    $dogId: String
+    $dogId: String!
     $name: String!
     $breed: String!
     $age: Int!
@@ -30,9 +52,10 @@ export const CREATE_THREAD = gql`
     $size: String!
     $weight: Float
     $feature: String
-    $images: [String!]!
-    $lostWhen: String
-    $lostWhere: String
+    $images: [String]
+    $lostWhen: String!
+    $lostWhere: String!
+    $owner: String!
     $phone: String!
     $email: String
   ) {
@@ -48,6 +71,7 @@ export const CREATE_THREAD = gql`
       images: $images
       lostWhen: $lostWhen
       lostWhere: $lostWhere
+      owner: $owner
       phone: $phone
       email: $email
     ) {
@@ -68,9 +92,45 @@ export const CREATE_THREAD = gql`
       }
       lostWhen
       lostWhere
+      owner
       phone
       email
       isClosed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const ADD_REPORT = gql`
+  mutation addReport(
+    $threadId: String!
+    $reportType: String!
+    $location: String!
+    $when: String!
+    $name: String!
+    $phone: String!
+    $memo: String
+  ) {
+    addReport(
+      threadId: $threadId
+      reportType: $reportType
+      location: $location
+      when: $when
+      name: $name
+      phone: $phone
+      memo: $memo
+    ) {
+      id
+      thread {
+        id
+      }
+      reportType
+      location
+      when
+      name
+      phone
+      memo
       createdAt
       updatedAt
     }
