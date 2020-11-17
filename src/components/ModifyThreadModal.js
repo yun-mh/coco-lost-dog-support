@@ -14,7 +14,7 @@ import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
 import { useMutation } from "@apollo/client";
-import { CREATE_THREAD, VIEW_DOG } from "../queries/MainQuery";
+import { CREATE_THREAD, MODIFY_THREAD, VIEW_DOG } from "../queries/MainQuery";
 
 Modal.setAppElement("#root");
 
@@ -56,20 +56,20 @@ const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
-const CreateThreadModal = ({
+const ModifyThreadModal = ({
   data,
+  dogId,
   modalIsOpen,
   closeModal,
-  dogId
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
-  const [lostWhen, setLostWhen] = useState(new Date());
-  const [images, setImages] = useState([]);
+  const [lostWhen, setLostWhen] = useState(data.lostWhen);
+  const [pictures, setPictures] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
-  const [createThreadMutation] = useMutation(CREATE_THREAD);
+  const [modifyThreadMutation] = useMutation(MODIFY_THREAD);
 
   const validate = (values) => {
     const errors = {};
@@ -99,31 +99,36 @@ const CreateThreadModal = ({
     if (formik.values.name !== "" && formik.values.breed !== "" && formik.values.age !== "" && formik.values.lostWhere !== "" && formik.values.owner !== "" && formik.values.phone !== "" && formik.values.gender !== "") {
       setLoading(true);
 
-      let imageLocations = [];
-      if (images[images.length - 1].length >= 1) {
-        const formData = new FormData();
-        for (let image of images[images.length - 1]) {
-          formData.append("file", image);
-        }
-        const {
-          data: { locations }
-        } = await axios.post(
-            "https://api-coco.herokuapp.com/api/upload",
-            formData,
-            {
-              headers: {
-                "content-type": "multipart/form-data",
-              },
-            }
-          );
-          imageLocations = [...locations];
-      }
+      let imageLocations, defaultImages = [];
+    //   if (images.length >= 1) {
+    //     const formData = new FormData();
+    //     for (let image of images) {
+    //       if (Array.isArray(image)) {
+    //         const file = image[0]
+    //         formData.append("file", file);
+    //       } else {
+    //         defaultImages.push(image);
+    //       }
+    //     }
+    //     const {
+    //       data: { locations }
+    //     } = await axios.post(
+    //         "https://api-coco.herokuapp.com/api/upload",
+    //         formData,
+    //         {
+    //           headers: {
+    //             "content-type": "multipart/form-data",
+    //           },
+    //         }
+    //       );
+    //       imageLocations = [...locations];
+    //   }
+      console.log(defaultImages);
       try {
         const {
-          data: { createThread },
-        } = await createThreadMutation({
+          data: { modifyThread },
+        } = await modifyThreadMutation({
           variables: {
-            dogId,
             name: formik.values.name,
             breed: formik.values.breed,
             age: formik.values.age,
@@ -131,7 +136,7 @@ const CreateThreadModal = ({
             size: formik.values.size,
             weight: formik.values.weight,
             feature: formik.values.feature,
-            images: [...imageLocations],
+            images: [...defaultImages, ...imageLocations],
             lostWhen: formik.values.lostWhen,
             lostWhere: formik.values.lostWhere,
             owner: formik.values.owner,
@@ -142,28 +147,14 @@ const CreateThreadModal = ({
             { query: VIEW_DOG, variables: { id: dogId } },
           ], 
         });
-        if (createThread) {
+        if (modifyThread) {
           closeModal();
-          toast.success("🙂 迷子情報の初期設定を完了しました！");
+          toast.success("🙂 迷子情報の編集を完了しました！");
         }
       } catch(e) {
         console.log(e)
         toast.error(`😢 ${e.message}`);
       } finally {
-        formik.values.name = "";
-        formik.values.breed = "";
-        formik.values.age = 1;
-        formik.values.gender = "male";
-        formik.values.size = "small";
-        formik.values.weight = 0.0;
-        formik.values.feature = "";
-        formik.values.lostWhen = "";
-        formik.values.lostWhere = "";
-        formik.values.owner = "";
-        formik.values.phone = "";
-        formik.values.email = "";
-        setImages([]);
-        setLostWhen(new Date());
         setLoading(false);
       }
     }
@@ -191,20 +182,36 @@ const CreateThreadModal = ({
   useEffect(() => {
     if (data !== undefined) {
       formik.values.name = data.name;
-      formik.values.breed = data.breed;
-      formik.values.age = moment().diff(data.birthdate, "years");
       formik.values.gender = data.gender;
-      formik.values.email = data.user.email;
+      formik.values.age = data.age;
+      formik.values.breed = data.breed;
+      formik.values.size = data.size;
+      formik.values.weight = data.weight;
+      formik.values.feature = data.feature;
+      formik.values.lostWhere = data.lostWhere;
+      formik.values.owner = data.owner;
+      formik.values.phone = data.phone;
+      formik.values.email = data.email;
     }
   }, [data, formik.values])
+
+  useEffect(() => {
+    let urlArr = [];
+    data.images.map(image => {
+      urlArr.push(image.url);
+    })
+    setPictures([...urlArr]);
+  }, [data])
 
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values])
   
-  const onDrop = image => {
-    setImages([...images, image]);
+  const onDrop = picture => {
+    setPictures([...pictures, picture]);
   };
+
+  console.log(pictures)
 
   return (
     <Modal
@@ -217,7 +224,7 @@ const CreateThreadModal = ({
       overlayClassName="Overlay flex justify-center items-center"
     >
       <ModalTitle>
-        迷子情報の初期設定
+        迷子情報の編集
         <CloseButton onClick={() => closeModal()}>
           <X size={30} className="text-gray-600 cursor-pointer" />
         </CloseButton>
@@ -315,6 +322,7 @@ const CreateThreadModal = ({
               imgExtension={[".jpg", ".png"]}
               fileTypeError="jpg, png形式のみアップロード可能です。"
               maxFileSize={5242880}
+              defaultImages={pictures}
             />
           </DivisionItem>
         </DivisionContainer>
@@ -371,4 +379,4 @@ const CreateThreadModal = ({
   );
 };
 
-export default CreateThreadModal;
+export default ModifyThreadModal;

@@ -4,6 +4,9 @@ import tw from "twin.macro";
 import moment from "moment";
 import AddReportModal from "./AddReportModal";
 import Button from "./Button";
+import ModifyThreadModal from "./ModifyThreadModal";
+import ModifyReportModal from "./ModifyReportModal";
+import Report from "./Report";
 
 const CollapseContainer = styled.div`
     ${tw`rounded-sm`}
@@ -27,21 +30,29 @@ const InitialInfoContainer = styled.div`
 
 const Collapse = ({ thread, dogId }) => {
     const [isOpen, setIsOpen] = useState();
-    const [createModalIsOpen, setCreateIsOpen] = useState(false);
+    const [createReportModalIsOpen, setCreateReportOpen] = useState(false);
+    const [modifyThreadModalIsOpen, setModifyThreadOpen] = useState(false);
 
     const toggleOpen = () => {
         setIsOpen(!isOpen);
     }
     
     const openCreateModal = () => {
-      setCreateIsOpen(true);
+        setCreateReportOpen(true);
     };
   
     const closeCreateModal = () => {
-      setCreateIsOpen(false);
+        setCreateReportOpen(false);
     };
 
-    console.log(thread)
+    const openModifyModal = () => {
+        setModifyThreadOpen(true);
+    };
+  
+    const closeModifyModal = () => {
+        setModifyThreadOpen(false);
+    };
+    console.log("thread", thread)
 
     return (
         <CollapseContainer>
@@ -67,14 +78,26 @@ const Collapse = ({ thread, dogId }) => {
                         {thread.age}
                         {thread.age}
                     </div>
+                    <Button use="accent" title="迷子情報修正" onClick={openModifyModal} />
                 </InitialInfoContainer>
+                { thread.reports && thread.reports.map(report => (
+                    <Report key={report.id} report={report} dogId={dogId} />
+                ))}
             </CollapseContentContainer>
             <AddReportModal
                 threadId={thread.id}
                 dogId={dogId}
-                modalIsOpen={createModalIsOpen}
+                modalIsOpen={createReportModalIsOpen}
                 closeModal={closeCreateModal}
             />
+            <ModifyThreadModal
+                data={thread}
+                dogId={dogId}
+                modalIsOpen={modifyThreadModalIsOpen}
+                closeModal={closeModifyModal}
+            />
+
+            
         </CollapseContainer>
     )
 }

@@ -29,10 +29,18 @@ export const VIEW_DOG = gql`
         }
         lostWhen
         lostWhere
+        owner
         phone
         email
         reports {
           id
+          location
+          when
+          memo
+          name
+          phone
+          reportType
+          createdAt
         }
         isClosed
         createdAt
@@ -102,6 +110,66 @@ export const CREATE_THREAD = gql`
   }
 `;
 
+export const MODIFY_THREAD = gql`
+  mutation modifyThread(
+    $id: String!
+    $name: String!
+    $breed: String!
+    $age: Int!
+    $gender: String!
+    $size: String!
+    $weight: Float
+    $feature: String
+    $images: [String]
+    $lostWhen: String!
+    $lostWhere: String!
+    $owner: String!
+    $phone: String!
+    $email: String
+  ) {
+    modifyThread(
+      id: $id
+      name: $name
+      breed: $breed
+      age: $age
+      gender: $gender
+      size: $size
+      weight: $weight 
+      feature: $feature
+      images: $images
+      lostWhen: $lostWhen
+      lostWhere: $lostWhere
+      owner: $owner
+      phone: $phone
+      email: $email
+    ) {
+      id
+      dog {
+        id
+      }
+      name
+      breed
+      age
+      gender
+      size
+      weight
+      feature
+      images {
+        id
+        url
+      }
+      lostWhen
+      lostWhere
+      owner
+      phone
+      email
+      isClosed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const ADD_REPORT = gql`
   mutation addReport(
     $threadId: String!
@@ -111,6 +179,7 @@ export const ADD_REPORT = gql`
     $name: String!
     $phone: String!
     $memo: String
+    $token: String
   ) {
     addReport(
       threadId: $threadId
@@ -120,6 +189,44 @@ export const ADD_REPORT = gql`
       name: $name
       phone: $phone
       memo: $memo
+      token: $token
+    ) {
+      id
+      thread {
+        id
+      }
+      reportType
+      location
+      when
+      name
+      phone
+      memo
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const MODIFY_REPORT = gql`
+  mutation modifyReport(
+    $reportId: String!
+    $reportType: String!
+    $location: String!
+    $when: String!
+    $name: String!
+    $phone: String!
+    $memo: String
+    $token: String
+  ) {
+    modifyReport(
+      reportId: $reportId
+      reportType: $reportType
+      location: $location
+      when: $when
+      name: $name
+      phone: $phone
+      memo: $memo
+      token: $token
     ) {
       id
       thread {

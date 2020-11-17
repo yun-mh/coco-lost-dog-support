@@ -13,7 +13,7 @@ import Button from "./Button";
 import Field from "./Field";
 import ButtonLoader from "./ButtonLoader";
 import GoogleMapComponent from "./Map";
-import { ADD_REPORT, VIEW_DOG } from "../queries/MainQuery";
+import { MODIFY_REPORT, VIEW_DOG } from "../queries/MainQuery";
 
 Modal.setAppElement("#root");
 
@@ -59,15 +59,15 @@ const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
-const AddReportModal = ({
+const ModifyReportModal = ({
+  data,
   dogId,
-  threadId,
   modalIsOpen,
   closeModal
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
-  const [when, setWhen] = useState(new Date());
+  const [when, setWhen] = useState(data.when);
   const [loading, setLoading] = useState(false);
   const [compassLoading, setCompassLoading] = useState(false);
   const [mapOn, setMapOn] = useState(false);
@@ -76,7 +76,7 @@ const AddReportModal = ({
   const [locationErr, setLocationErr] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
-  const [addReportMutation] = useMutation(ADD_REPORT);
+  const [modifyReportMutation] = useMutation(MODIFY_REPORT);
 
   const validate = (values) => {
     const errors = {};
@@ -104,10 +104,10 @@ const AddReportModal = ({
       setLoading(true);
       try {
         const {
-          data: { addReport },
-        } = await addReportMutation({
+          data: { modifyReport },
+        } = await modifyReportMutation({
           variables: {
-            threadId,
+            reportId: data.id,
             reportType: reportFormik.values.reportType,
             location: reportFormik.values.location,
             when: reportFormik.values.when,
@@ -119,19 +119,13 @@ const AddReportModal = ({
             { query: VIEW_DOG, variables: { id: dogId } },
           ], 
         });
-        if (addReport) {
+        if (modifyReport) {
           closeModal();
-          toast.success("😄 通報を追加しました！");
+          toast.success("😄 レポートを修正しました！");
         }
       } catch (e) {
         toast.error(`😢 ${e.message}`);
       } finally {
-        reportFormik.values.reportType = "findOnly";
-        reportFormik.values.location = "";
-        reportFormik.values.when = "";
-        reportFormik.values.name = "";
-        reportFormik.values.phone = "";
-        reportFormik.values.memo = "";
         setLat();
         setLon();
         setWhen(new Date());
@@ -143,12 +137,12 @@ const AddReportModal = ({
 
   const reportFormik = useFormik({
     initialValues: {
-      reportType: "findOnly",
-      location: "",
+      reportType: data.reportType,
+      location: data.location,
       when,
-      name: "",
-      phone: "",
-      memo: "",
+      name: data.name,
+      phone: data.phone,
+      memo: data.memo,
     },
     validate,
     onSubmit,
@@ -206,7 +200,7 @@ const AddReportModal = ({
       overlayClassName="Overlay flex justify-center items-center"
     >
       <ModalTitle>
-        レポート追加
+        レポート修正
         <CloseButton onClick={() => closeModal()}>
           <X size={30} className="text-gray-600 cursor-pointer" />
         </CloseButton>
@@ -313,4 +307,4 @@ const AddReportModal = ({
   );
 };
 
-export default AddReportModal;
+export default ModifyReportModal;
