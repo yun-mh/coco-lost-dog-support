@@ -105,7 +105,7 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
               ) : (
                 data.viewDog.lostDogThreads.length > 0 ? data.viewDog.lostDogThreads.map(thread => (
                     <div key={thread.id} className="w-full my-4">
-                      <Collapse dogId={dogId} thread={thread} />
+                      <Collapse user={user} dogId={dogId} thread={thread} dogImg={data.viewDog.image} />
                     </div>
                   )) : (
                     <div className="h-64 flex items-center justify-center">

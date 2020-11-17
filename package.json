@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.2.5",
+    "@brainhubeu/react-carousel": "^1.19.26",
     "@date-io/date-fns": "1.x",
     "@material-ui/core": "^4.11.0",
     "@material-ui/pickers": "^3.2.10",
