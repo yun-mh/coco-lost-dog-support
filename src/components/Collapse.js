@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import moment from "moment";
-import Carousel, { Dots } from "@brainhubeu/react-carousel";
-import "@brainhubeu/react-carousel/lib/style.css";
 import AddReportModal from "./AddReportModal";
 import Button from "./Button";
 import ModifyThreadModal from "./ModifyThreadModal";
 import Report from "./Report";
+import { Bell } from "react-feather";
+import Poster from "./Poster";
+import Timeline from "./Timeline";
 
 const CollapseContainer = styled.div`
-    ${tw`rounded-sm`}
+    ${tw`w-full rounded-sm`}
 `;
 
 const CollapseTitleContainer = styled.div`
@@ -22,80 +23,23 @@ const CollapseTitle = styled.button`
 `;
 
 const CollapseContentContainer = styled.div`
-    ${tw`bg-primary-light w-full p-5`}
+    ${tw`bg-primary-light lg:flex p-5`}
 `;
 
 const InitialInfoContainer = styled.div`
-    ${tw`w-full sm:w-1/2 bg-white rounded p-3`}
+    ${tw`hidden lg:block lg:w-1/2 bg-white rounded p-3 h-full`}
 `;
 
-const InfoTitle = styled.div`
-    ${tw`sm:text-center font-bold text-gray-700 text-base sm:text-3xl py-4 sm:py-2 bg-secondary-light relative`}
-`;
-
-const ImageContainer = styled.div`
-    ${tw``}
-`;
-
-const Image = styled.div`
-  background-image: url(${({ url }) => url});
-  ${tw`w-full h-quarter md:h-half bg-cover`}
-`;
-
-const Divide = styled.hr`
-  ${tw`w-full my-3`}
-`;
-
-const LostInfo = styled.p`
-    ${tw`text-center text-base sm:text-xl mb-3`}
-`;
-
-const DogInfoRow = styled.div`
-    ${tw`md:flex p-1`}
-`;
-
-const DogInfoItem = styled.div`
-    ${tw`md:w-full`}
-`;
-
-const DogInfoItemHeader = styled.span`
-    ${tw``}
-`;
-
-const DogInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-base sm:text-xl`}
-`;
-
-const OwnerInfoRow = styled.div`
-    ${tw`md:flex p-1`}
-`;
-
-const OwnerInfoItem = styled.div`
-    ${tw`md:w-full`}
-`;
-
-const OwnerInfoItemHeader = styled.span`
-    ${tw`text-base`}
-`;
-
-const OwnerInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-base sm:text-xl`}
-`;
-
-const Footer = styled.p`
-    ${tw`bg-secondary-light text-base sm:text-lg text-center py-1 mt-2`}
-`;
-
-const ReportContainer = styled.div`
-    ${tw`sm:w-1/2 ml-3 p-5`}
+const ReportsContainer = styled.div`
+    ${tw`lg:w-1/2`}
 `;
 
 const Collapse = ({ user, thread, dogId, dogImg }) => {
-    console.log("user", user)
     const [isOpen, setIsOpen] = useState(false);
-    const [subValue, setSubValue] = useState(0);
+
+    console.log(isOpen)
+   
     const [createReportModalIsOpen, setCreateReportOpen] = useState(false);
-    const [modifyThreadModalIsOpen, setModifyThreadOpen] = useState(false);
 
     const toggleOpen = () => {
         setIsOpen(!isOpen);
@@ -109,19 +53,7 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
         setCreateReportOpen(false);
     };
 
-    const openModifyModal = () => {
-        setModifyThreadOpen(true);
-    };
-  
-    const closeModifyModal = () => {
-        setModifyThreadOpen(false);
-    };
     console.log("thread", thread)
-
-
-    const onChangeSub = (subValue) => {
-        setSubValue(subValue);
-    };
 
     return (
         <CollapseContainer>
@@ -131,117 +63,22 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
                 </CollapseTitle>
                 <Button use="accent" title="通報する" onClick={openCreateModal} />
             </CollapseTitleContainer>
-            <CollapseContentContainer className={isOpen ? "border border-b-0 px-10 py-6 flex" : "hidden"}>
-                <InitialInfoContainer>
-                <div className="border-4 border-secondary-light rounded-lg">
-                    <InfoTitle>
-                        犬を探しています
-                        <div className="text-base absolute top-0 right-0 hidden sm:block">
-                            <Button use="accent" title="修正" onClick={openModifyModal} />
-                        </div>
-                    </InfoTitle>
-
-                    
-                    <ImageContainer>
-                        <Carousel value={subValue} onChange={onChangeSub}>
-                            {thread.images ? (
-                                thread.images.map((image) => <Image key={image.id} url={image.url} />)
-                            ) : (
-                                <Image url={dogImg.url} />
-                            )}
-                        </Carousel>
-                        <Dots value={subValue} onChange={onChangeSub} number={thread.images.length} />
-                    </ImageContainer>
-
-                    <LostInfo>
-                        <span className="font-semibold mr-2">{ moment(thread.lostWhen).format("ll") }</span>
-                        <span className="font-semibold text-blue-700 mr-2">{ thread.lostWhere }</span>
-                        <span>付近で行方不明</span>
-                    </LostInfo>
-
-                    <Divide />
-
-                    <DogInfoRow>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>名前: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.name}</DogInfoItemContent>
-                        </DogInfoItem>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>犬種: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.breed}</DogInfoItemContent>
-                        </DogInfoItem>
-                    </DogInfoRow>
-                    <DogInfoRow>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>性別: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.gender === "male" ? "男" : "女"}</DogInfoItemContent>
-                        </DogInfoItem>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>年齢: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.age}歳</DogInfoItemContent>
-                        </DogInfoItem>
-                    </DogInfoRow>
-                    <DogInfoRow>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>サイズ: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.size === "small" ? "小型" : thread.size === "medium" ? "中型" : "大型"}</DogInfoItemContent>
-                        </DogInfoItem>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>体重: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.weight} kg</DogInfoItemContent>
-                        </DogInfoItem>
-                    </DogInfoRow>
-                    <DogInfoRow>
-                        <DogInfoItem>
-                            <DogInfoItemHeader>特徴: </DogInfoItemHeader>
-                            <DogInfoItemContent>{thread.feature}</DogInfoItemContent>
-                        </DogInfoItem>
-                    </DogInfoRow>
-
-                    <Divide />
-
-                    <OwnerInfoRow>
-                        <OwnerInfoItem>
-                            <OwnerInfoItemHeader>飼い主名: </OwnerInfoItemHeader>
-                            <OwnerInfoItemContent>{thread.owner}</OwnerInfoItemContent>
-                        </OwnerInfoItem>
-                        <OwnerInfoItem>
-                            <OwnerInfoItemHeader>連絡先: </OwnerInfoItemHeader>
-                            <OwnerInfoItemContent>{thread.phone}</OwnerInfoItemContent>
-                        </OwnerInfoItem>
-                    </OwnerInfoRow>
-                    <OwnerInfoRow>
-                        <OwnerInfoItem>
-                            <OwnerInfoItemHeader>メールアドレス: </OwnerInfoItemHeader>
-                            <OwnerInfoItemContent>{thread.email}</OwnerInfoItemContent>
-                        </OwnerInfoItem>
-                    </OwnerInfoRow>
-
-                    <Footer>見つけた方はレポートしてください！</Footer>
-                    
-                </div>
-                </InitialInfoContainer>
-                
-                <ReportContainer>
-                    { thread.reports && thread.reports.map(report => (
-                        <Report key={report.id} report={report} dogId={dogId} />
-                    ))}
-                </ReportContainer>
-            </CollapseContentContainer>
+            { isOpen && (
+                <CollapseContentContainer className={isOpen ? "border border-b-0 px-10 py-6 flex" : "hidden"}>
+                    <InitialInfoContainer>
+                        <Poster dogId={dogId} dogImg={dogImg} thread={thread} />
+                    </InitialInfoContainer>
+                    <ReportsContainer>
+                        <Timeline dogId={dogId} thread={thread} />
+                    </ReportsContainer>
+                </CollapseContentContainer>
+            )}
             <AddReportModal
                 threadId={thread.id}
                 dogId={dogId}
                 modalIsOpen={createReportModalIsOpen}
                 closeModal={closeCreateModal}
             />
-            <ModifyThreadModal
-                data={thread}
-                dogId={dogId}
-                modalIsOpen={modifyThreadModalIsOpen}
-                closeModal={closeModifyModal}
-            />
-
-            
         </CollapseContainer>
     )
 }
