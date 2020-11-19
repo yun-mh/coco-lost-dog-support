@@ -1,14 +1,31 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
+import { X } from "react-feather";
 import moment from "moment";
+import Modal from "react-modal";
+import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import Carousel, { Dots } from "@brainhubeu/react-carousel";
 import "@brainhubeu/react-carousel/lib/style.css";
-import Button from "./Button";
-import ModifyThreadModal from "./ModifyThreadModal";
+
+Modal.setAppElement("#root");
+
+const ModalTitle = styled.div`
+  ${tw`fixed w-4/5 flex items-center justify-center h-12 border-b font-semibold bg-white rounded-t-lg`}
+`;
+
+const CloseButton = styled.div`
+  ${tw`absolute`}
+  right: 10px;
+`;
+
+const ModalContainer = styled.form`
+  ${tw`mt-12 p-2 flex flex-col overflow-y-auto text-sm`}
+  height: calc(100% - 3rem);
+`;
 
 const InfoTitle = styled.div`
-    ${tw`md:text-center font-bold text-gray-700 text-base md:text-3xl py-4 md:py-2 bg-secondary-light relative`}
+    ${tw`text-center pl-3 font-bold text-gray-700 text-base py-4 md:py-2 bg-secondary-light relative`}
 `;
 
 const ImageContainer = styled.div`
@@ -21,11 +38,11 @@ const Image = styled.div`
 `;
 
 const Divide = styled.hr`
-  ${tw`w-full my-3`}
+    ${tw`w-full my-3`}
 `;
 
 const LostInfo = styled.p`
-    ${tw`text-center text-base md:text-xl mb-3`}
+    ${tw`text-center mb-3`}
 `;
 
 const DogInfoRow = styled.div`
@@ -41,7 +58,7 @@ const DogInfoItemHeader = styled.span`
 `;
 
 const DogInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-base md:text-xl`}
+    ${tw`text-blue-700 font-semibold text-sm`}
 `;
 
 const OwnerInfoRow = styled.div`
@@ -53,42 +70,51 @@ const OwnerInfoItem = styled.div`
 `;
 
 const OwnerInfoItemHeader = styled.span`
-    ${tw`text-base`}
+    ${tw`text-sm`}
 `;
 
 const OwnerInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-base md:text-xl`}
+    ${tw`text-blue-700 font-semibold text-sm md:text-xl`}
 `;
 
 const Footer = styled.p`
-    ${tw`bg-secondary-light text-base md:text-lg text-center py-1 mt-2`}
+    ${tw`bg-secondary-light text-sm text-center py-1 mt-2`}
 `;
 
-const Poster = ({ user, dogId, dogImg, thread }) => {
-    const [subValue, setSubValue] = useState(0);
-    const [modifyThreadModalIsOpen, setModifyThreadOpen] = useState(false);
+const PosterModal = ({
+  dogImg,
+  thread,
+  modalIsOpen,
+  closeModal
+}) => {
+  const { lock, unlock } = useScrollBodyLock();
 
-    const openModifyModal = () => {
-        setModifyThreadOpen(true);
-    };
-  
-    const closeModifyModal = () => {
-        setModifyThreadOpen(false);
-    };
+  const [subValue, setSubValue] = useState(0);
 
-    const onChangeSub = (subValue) => {
-        setSubValue(subValue);
-    };
+  const onChangeSub = (subValue) => {
+    setSubValue(subValue);
+  };
 
-    return (
-        <div className="border-4 border-secondary-light rounded-lg">
+  return (
+    <Modal
+      isOpen={modalIsOpen}
+      onAfterOpen={lock}
+      onAfterClose={unlock}
+      shouldFocusAfterRender
+      onRequestClose={closeModal}
+      className="w-4/5 h-threequarter bg-white rounded-lg shadow"
+      overlayClassName="Overlay flex justify-center items-center"
+    >
+      <ModalTitle>
+        迷子情報
+        <CloseButton onClick={() => closeModal()}>
+          <X size={30} className="text-gray-600 cursor-pointer" />
+        </CloseButton>
+      </ModalTitle>
+      <ModalContainer>
+      <div className="border-4 border-secondary-light rounded-lg">
             <InfoTitle>
                 犬を探しています
-                {user !== "" && (
-                    <div className="text-base absolute top-0 right-0 hidden sm:block">
-                        <Button use="accent" title="修正" onClick={openModifyModal} />
-                    </div>
-                )}
             </InfoTitle>
             <ImageContainer>
                 <Carousel value={subValue} onChange={onChangeSub}>
@@ -166,15 +192,10 @@ const Poster = ({ user, dogId, dogImg, thread }) => {
             </OwnerInfoRow>
 
             <Footer>見つけた方はレポートしてください！</Footer>
-
-            <ModifyThreadModal
-                data={thread}
-                dogId={dogId}
-                modalIsOpen={modifyThreadModalIsOpen}
-                closeModal={closeModifyModal}
-            />
         </div>
-    )
-}
+      </ModalContainer>
+    </Modal>
+  );
+};
 
-export default Poster;
+export default PosterModal;

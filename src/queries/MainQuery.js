@@ -25,6 +25,7 @@ export const VIEW_DOG = gql`
         weight
         feature
         images {
+          id
           url
         }
         lostWhen

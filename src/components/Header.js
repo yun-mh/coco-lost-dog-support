@@ -7,11 +7,11 @@ import Loader from "./Loader";
 import CreateThreadModal from "./CreateThreadModal";
 
 const NavContainer = styled.nav`
-  ${tw`fixed w-full mx-auto bg-white z-50`}
+  ${tw`fixed w-full flex justify-center top-0 left-0 bg-white z-50`}
 `;
 
 const NavBar = styled.div`
-  ${tw`max-w-6xl container  px-2 sm:px-6 lg:px-8`}
+  ${tw`container px-2 sm:px-6 lg:px-8`}
 `;
 
 const NavBarContainer = styled.div`

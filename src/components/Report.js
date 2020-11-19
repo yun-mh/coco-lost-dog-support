@@ -8,27 +8,27 @@ import GoogleMapComponent from "./Map";
 import { Anchor, Eye, LogIn } from "react-feather";
 
 const ReportContainer = styled.div`
-    ${tw`ml-10 mb-8 flex items-center w-full`}
+    ${tw`md:ml-10 mb-8 flex items-center w-full`}
 `;
 
 const ReportIndicator = styled.div`
-    ${tw`z-20 flex items-center justify-center text-red-400 order-1 bg-white shadow-xl w-8 h-8 rounded-full mb-3`}
+    ${tw`hidden z-20 md:flex items-center justify-center text-red-400 order-1 bg-white shadow-xl w-8 h-8 rounded-full mb-3`}
 `;
 
 const ReportContentContainer = styled.div`
-    ${tw`ml-8 order-1 bg-white rounded-lg shadow-xl w-3/4 px-6 py-4 mb-3`}
+    ${tw`mx-2 md:ml-8 order-1 bg-white rounded-lg shadow-xl md:w-1/2 lg:w-3/4 px-2 md:px-6 py-4 mb-3`}
 `;
 
 const ReportHeader = styled.h3`
-    ${tw`mb-3 font-bold text-gray-800 text-xl`}
+    ${tw`mb-3 font-bold text-gray-800 md:text-xl`}
 `;
 
 const ReportDetail = styled.div`
-    ${tw``}
+    ${tw`text-sm md:text-base`}
 `;
 
 const ReportFooter = styled.div`
-    ${tw`text-sm leading-snug tracking-wide text-gray-600 text-opacity-100 text-right`}
+    ${tw`text-xs md:text-sm leading-snug tracking-wide text-gray-600 text-opacity-100 text-right mt-2`}
 `;
 
 const Report = ({ report, dogId }) => {
