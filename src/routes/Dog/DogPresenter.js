@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, Meh, Smile } from "react-feather";
 import moment from "moment";
 import Header from "../../components/Header";
@@ -9,14 +9,24 @@ import Collapse from "../../components/Collapse";
 const DogPresenter = ({ dogId, user, loading, data }) => {
   const history = useHistory();
 
+  const [sortedThread, setSortedThread] = useState([]);
+
   if (!loading && data === undefined) {
     history.push("/");
   }
 
+  useEffect(() => {
+    if (data !== undefined) {
+      const { viewDog: { lostDogThreads } } = data;
+      const sorted = lostDogThreads.concat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setSortedThread([...sorted]);
+    }
+  }, [data]);
+
   return (
     <>
       <Header user={user} loading={loading} data={data} />
-      <div className="pt-16">
+      <div className="pt-16 pb-2">
         {loading ? (
           <div className="w-full h-32 flex items-center justify-center">
             <Loader />
@@ -103,7 +113,7 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
                   </span>
                 </div>
               ) : (
-                data.viewDog.lostDogThreads.length > 0 ? data.viewDog.lostDogThreads.map(thread => (
+                data.viewDog.lostDogThreads.length > 0 ? sortedThread.map(thread => (
                     <div key={thread.id} className="w-full my-4">
                       <Collapse user={user} dogId={dogId} thread={thread} dogImg={data.viewDog.image} />
                     </div>

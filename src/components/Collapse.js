@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import moment from "moment";
+import { toast } from "react-toastify";
+import { useMutation } from "@apollo/client";
+import { Plus } from "react-feather";
 import AddReportModal from "./AddReportModal";
 import Button from "./Button";
 import ModifyThreadModal from "./ModifyThreadModal";
-import { Plus } from "react-feather";
 import Poster from "./Poster";
 import Timeline from "./Timeline";
 import PosterModal from "./PosterModal";
-import { useMutation } from "@apollo/client";
 import { CLOSE_THREAD, VIEW_DOG } from "../queries/MainQuery";
-import { toast } from "react-toastify";
-import { useHistory } from "react-router-dom";
 
 const CollapseContainer = styled.div`
     ${tw`w-full rounded-sm`}

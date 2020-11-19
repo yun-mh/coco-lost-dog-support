@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
-import { X } from "react-feather";
+import { Edit, Trash, X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import moment from "moment";
 import { toast } from "react-toastify";
 import ImageUploader from "react-images-upload";
+import ImageUploading from 'react-images-uploading';
 import TextareaAutosize from "react-autosize-textarea";
 import axios from "axios";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
@@ -202,8 +203,14 @@ const CreateThreadModal = ({
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values])
   
-  const onDrop = image => {
-    setImages([...images, image]);
+  // const onDrop = image => {
+  //   setImages([...images, image]);
+  // };
+
+  const onChange = (imageList, addUpdateIndex) => {
+    // data for submit
+    console.log(imageList, addUpdateIndex);
+    setImages(imageList);
   };
 
   return (
@@ -306,7 +313,7 @@ const CreateThreadModal = ({
             <ItemLabel htmlFor="images">
               写真アップロード(jpg・png形式)
             </ItemLabel>
-            <ImageUploader
+            {/* <ImageUploader
               withIcon={true}
               withPreview={true}
               onChange={onDrop}
@@ -315,7 +322,54 @@ const CreateThreadModal = ({
               imgExtension={[".jpg", ".png"]}
               fileTypeError="jpg, png形式のみアップロード可能です。"
               maxFileSize={5242880}
-            />
+            /> */}
+            <ImageUploading
+              multiple
+              value={images}
+              onChange={onChange}
+              maxNumber={5}
+              dataURLKey="data_url"
+            >
+              {({
+                imageList,
+                onImageUpload,
+                onImageRemoveAll,
+                onImageUpdate,
+                onImageRemove,
+                isDragging,
+                dragProps,
+              }) => (
+                // write your building UI
+                <>
+                  <div className="w-full md:flex">
+                    <Button className="md:w-1/2 md:mr-3" use={"accent"} title="画像を選択" onClick={onImageUpload} />
+                    <Button className="md:w-1/2" title="クリア" onClick={onImageRemoveAll} />
+                    {/* <button
+                      style={isDragging ? { color: 'red' } : undefined}
+                      onClick={onImageUpload}
+                      {...dragProps}
+                    >
+                      Click or Drop here
+                    </button> */}
+                    {/* <button onClick={onImageRemoveAll}>Remove all images</button> */}
+                  </div>
+                  <div className="w-full flex flex-wrap justify-around items-center mt-8">
+                    {imageList.map((image, index) => (
+                      <div className="flex flex-col relative mx-5">
+                        <div key={index} className="bg-white p-2 border">
+                          <img src={image['data_url']} alt="" width="100" />
+                        </div>
+                        <div>  
+                          <div className="cursor-pointer bg-red-400 hover:bg-red-500 text-white p-1 rounded-full flex items-center justify-center absolute top-0" style={{ right: -16, top: -16 }} onClick={() => onImageRemove(index)}>
+                            <X />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </ImageUploading>
           </DivisionItem>
         </DivisionContainer>
 

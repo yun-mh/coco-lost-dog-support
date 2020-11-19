@@ -65,7 +65,7 @@ const ModifyThreadModal = ({
   const { lock, unlock } = useScrollBodyLock();
 
   const [lostWhen, setLostWhen] = useState(data.lostWhen);
-  const [pictures, setPictures] = useState([]);
+  const [pictures, setPictures] = useState([...data.images.map(image => image.url)]);
   const [loading, setLoading] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
@@ -195,13 +195,13 @@ const ModifyThreadModal = ({
     }
   }, [data, formik.values])
 
-  useEffect(() => {
-    let urlArr = [];
-    data.images.map(image => {
-      urlArr.push(image.url);
-    })
-    setPictures([...urlArr]);
-  }, [data])
+  // useEffect(() => {
+  //   let urlArr = [];
+  //   data.images.map(image => {
+  //     urlArr.push(image.url);
+  //   })
+  //   setPictures([...urlArr]);
+  // }, [data])
 
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
