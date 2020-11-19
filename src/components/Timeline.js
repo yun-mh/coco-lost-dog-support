@@ -44,7 +44,7 @@ const Timeline = ({ thread, dogId }) => {
                 タイムライン
             </ReportHeader>
             <TimelineContainer>
-                <div class="hidden md:block border-r-2 absolute border-opacity-20 border-gray-500 border-dashed h-full" style={{left: "54px"}}></div>
+                <div className="hidden md:block border-r-2 absolute border-opacity-20 border-gray-500 border-dashed h-full" style={{left: "54px"}}></div>
                 <InitialReportContainer>
                     <InitialReportIndicator>
                         <Bell size={20} />

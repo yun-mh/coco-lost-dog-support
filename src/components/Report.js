@@ -41,7 +41,6 @@ const Report = ({ report, dogId }) => {
         try {
             const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${report.location}components=country:JP&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`)
             const resData = await res.json();
-            console.log(resData)
             const { geometry: { location: { lat, lng }} } = resData.results[0];
             setLat(lat);
             setLng(lng);
@@ -61,8 +60,6 @@ const Report = ({ report, dogId }) => {
     const closeRModifyModal = () => {
         setModifyReportOpen(false);
     };
-
-    console.log("report", report)
 
     return (
         <ReportContainer>

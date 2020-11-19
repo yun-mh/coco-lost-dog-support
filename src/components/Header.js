@@ -12,6 +12,7 @@ const NavContainer = styled.nav`
 
 const NavBar = styled.div`
   ${tw`container px-2 sm:px-6 lg:px-8`}
+  box-shadow: 0 1.5px 0px rgba(0, 0, 0, 0.1);
 `;
 
 const NavBarContainer = styled.div`
@@ -118,12 +119,12 @@ const Header = ({ user, loading, data }) => {
           {user && user !== "" && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <div className="flex hidden md:block">
-                <button onClick={openCreateModal} className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
+                <button onClick={openCreateModal} className="shadow px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
                   迷子情報登録
                 </button>
               </div>
               <div className="flex md:hidden">
-                <button onClick={openCreateModal} className="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
+                <button onClick={openCreateModal} className="shadow px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
                   <PenTool />
                 </button>
               </div>

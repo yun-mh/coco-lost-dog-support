@@ -8,7 +8,7 @@ const Container = styled.div`
 `;
 
 const Btn = styled.button`
-  ${tw`px-5 h-10 rounded-lg focus:outline-none active:bg-primary-light flex items-center justify-center`}
+  ${tw`px-5 h-10 rounded-lg focus:outline-none active:bg-primary-light flex items-center justify-center shadow`}
 `;
 
 const Button = ({ className, loading = false, type, title, use = "standard", onClick }) => {

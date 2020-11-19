@@ -5,8 +5,7 @@ import moment from "moment";
 import AddReportModal from "./AddReportModal";
 import Button from "./Button";
 import ModifyThreadModal from "./ModifyThreadModal";
-import Report from "./Report";
-import { Bell, Plus } from "react-feather";
+import { Plus } from "react-feather";
 import Poster from "./Poster";
 import Timeline from "./Timeline";
 import PosterModal from "./PosterModal";
@@ -77,13 +76,10 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
         const result = window.confirm("犬がちゃんと帰還されましたか？");
 
         if (result) {
+            // close the thread and set isClose to true
             console.log("omedetou")
         }
     }
-
-    console.log("thread", thread)
-
-    console.log("user", user)
 
     return (
         <CollapseContainer>
