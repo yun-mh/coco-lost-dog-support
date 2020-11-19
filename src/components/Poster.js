@@ -84,7 +84,7 @@ const Poster = ({ user, dogId, dogImg, thread }) => {
         <div className="border-4 border-secondary-light rounded-lg">
             <InfoTitle>
                 犬を探しています
-                {user !== "" && (
+                {!thread.isClosed && user !== "" && (
                     <div className="text-base absolute top-0 right-0 hidden sm:block">
                         <Button use="accent" title="修正" onClick={openModifyModal} />
                     </div>

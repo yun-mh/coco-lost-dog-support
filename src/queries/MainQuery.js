@@ -171,6 +171,42 @@ export const MODIFY_THREAD = gql`
   }
 `;
 
+export const CLOSE_THREAD = gql`
+  mutation closeThread(
+    $threadId: String!
+    $dogId: String!
+  ) {
+    closeThread(
+      threadId: $threadId
+      dogId: $dogId
+    ) {
+      id
+      dog {
+        id
+      }
+      name
+      breed
+      age
+      gender
+      size
+      weight
+      feature
+      images {
+        id
+        url
+      }
+      lostWhen
+      lostWhere
+      owner
+      phone
+      email
+      isClosed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const ADD_REPORT = gql`
   mutation addReport(
     $threadId: String!

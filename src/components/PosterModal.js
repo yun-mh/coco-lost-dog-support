@@ -74,7 +74,7 @@ const OwnerInfoItemHeader = styled.span`
 `;
 
 const OwnerInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-sm md:text-xl`}
+    ${tw`text-blue-700 font-semibold text-sm`}
 `;
 
 const Footer = styled.p`
