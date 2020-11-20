@@ -28,7 +28,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(115, 200, 183, 0.7);
-  z-index: 30;
+  z-index: 50;
 }
 
 .ReactModal__Body--open {

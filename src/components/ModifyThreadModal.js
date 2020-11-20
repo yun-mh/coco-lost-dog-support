@@ -6,7 +6,7 @@ import Modal from "react-modal";
 import { useFormik } from "formik";
 import moment from "moment";
 import { toast } from "react-toastify";
-import ImageUploader from "react-images-upload";
+import ImageUploading from 'react-images-uploading';
 import TextareaAutosize from "react-autosize-textarea";
 import axios from "axios";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
@@ -14,7 +14,7 @@ import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
 import { useMutation } from "@apollo/client";
-import { CREATE_THREAD, MODIFY_THREAD, VIEW_DOG } from "../queries/MainQuery";
+import { MODIFY_THREAD, VIEW_DOG } from "../queries/MainQuery";
 
 Modal.setAppElement("#root");
 
@@ -65,7 +65,7 @@ const ModifyThreadModal = ({
   const { lock, unlock } = useScrollBodyLock();
 
   const [lostWhen, setLostWhen] = useState(data.lostWhen);
-  const [pictures, setPictures] = useState([...data.images.map(image => image.url)]);
+  const [images, setImages] = useState([...data.images]);
   const [loading, setLoading] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
@@ -100,30 +100,29 @@ const ModifyThreadModal = ({
       setLoading(true);
 
       let imageLocations, defaultImages = [];
-    //   if (images.length >= 1) {
-    //     const formData = new FormData();
-    //     for (let image of images) {
-    //       if (Array.isArray(image)) {
-    //         const file = image[0]
-    //         formData.append("file", file);
-    //       } else {
-    //         defaultImages.push(image);
-    //       }
-    //     }
-    //     const {
-    //       data: { locations }
-    //     } = await axios.post(
-    //         "https://api-coco.herokuapp.com/api/upload",
-    //         formData,
-    //         {
-    //           headers: {
-    //             "content-type": "multipart/form-data",
-    //           },
-    //         }
-    //       );
-    //       imageLocations = [...locations];
-    //   }
-      console.log(defaultImages);
+      if (images.length > 0) {
+        console.log("here")
+        const formData = new FormData();
+        for (let image of images) {
+          if (image.id !== undefined) {
+            defaultImages.push(image);
+          } else {
+            formData.append("file", image.file);
+          }
+        }
+        const {
+          data: { locations }
+        } = await axios.post(
+            "https://api-coco.herokuapp.com/api/upload",
+            formData,
+            {
+              headers: {
+                "content-type": "multipart/form-data",
+              },
+            }
+          );
+        imageLocations = [...locations];
+      }
       try {
         const {
           data: { modifyThread },
@@ -195,23 +194,15 @@ const ModifyThreadModal = ({
     }
   }, [data, formik.values])
 
-  // useEffect(() => {
-  //   let urlArr = [];
-  //   data.images.map(image => {
-  //     urlArr.push(image.url);
-  //   })
-  //   setPictures([...urlArr]);
-  // }, [data])
+  const onChange = (imageList, addUpdateIndex) => {
+    setImages(imageList);
+  };
 
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values])
-  
-  const onDrop = picture => {
-    setPictures([...pictures, picture]);
-  };
 
-  console.log(pictures)
+  console.log(images)
 
   return (
     <Modal
@@ -313,17 +304,47 @@ const ModifyThreadModal = ({
             <ItemLabel htmlFor="images">
               写真アップロード(jpg・png形式)
             </ItemLabel>
-            <ImageUploader
-              withIcon={true}
-              withPreview={true}
-              onChange={onDrop}
-              withLabel={false}
-              buttonText="写真をアップロード"         
-              imgExtension={[".jpg", ".png"]}
-              fileTypeError="jpg, png形式のみアップロード可能です。"
-              maxFileSize={5242880}
-              defaultImages={pictures}
-            />
+            <ImageUploading
+              multiple
+              value={images}
+              onChange={onChange}
+              maxNumber={5}
+              acceptType={['jpg', 'png']}
+              dataURLKey="data_url"
+            >
+              {({
+                imageList,
+                onImageUpload,
+                onImageRemoveAll,
+                onImageRemove,
+                errors
+              }) => (
+                <>
+                  <div className="w-full md:flex">
+                    <Button type="button" className="md:w-1/2 md:mr-3" use={"accent"} title="画像を選択" onClick={onImageUpload} />
+                    <Button type="button" className="md:w-1/2" title="クリア" onClick={onImageRemoveAll} />
+                  </div>
+                  <div className="text-red-500">
+                    {errors?.maxNumber && <span>イメージは最大５枚までアップロード可能です。</span>}
+                    {errors?.acceptType && <span>jpg・png形式のみアップロード可能です。</span>}
+                  </div>
+                  <div className="w-full flex flex-wrap justify-around items-center mt-8">
+                    {imageList.map((image, index) => (
+                      <div key={index} className="flex flex-col relative mx-5 my-3">
+                        <div className="bg-white p-2 border">
+                          <img src={image['data_url'] || image.url} alt="dogImage" width="150" />
+                        </div>
+                        <div>  
+                          <div className="cursor-pointer bg-red-400 hover:bg-red-500 text-white p-1 rounded-full flex items-center justify-center absolute top-0" style={{ right: -10, top: -10 }} onClick={() => onImageRemove(index)}>
+                            <X size={16} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </ImageUploading>
           </DivisionItem>
         </DivisionContainer>
 

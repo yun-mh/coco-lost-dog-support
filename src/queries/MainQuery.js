@@ -210,6 +210,7 @@ export const CLOSE_THREAD = gql`
 export const ADD_REPORT = gql`
   mutation addReport(
     $threadId: String!
+    $password: String!
     $reportType: String!
     $location: String!
     $when: String!
@@ -220,6 +221,7 @@ export const ADD_REPORT = gql`
   ) {
     addReport(
       threadId: $threadId
+      password: $password
       reportType: $reportType
       location: $location
       when: $when

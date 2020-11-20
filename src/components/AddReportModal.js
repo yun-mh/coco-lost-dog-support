@@ -108,6 +108,7 @@ const AddReportModal = ({
         } = await addReportMutation({
           variables: {
             threadId,
+            password: reportFormik.values.password,
             reportType: reportFormik.values.reportType,
             location: reportFormik.values.location,
             when: reportFormik.values.when,
@@ -126,6 +127,7 @@ const AddReportModal = ({
       } catch (e) {
         toast.error(`😢 ${e.message}`);
       } finally {
+        reportFormik.values.password = "";
         reportFormik.values.reportType = "findOnly";
         reportFormik.values.location = "";
         reportFormik.values.when = "";
@@ -143,6 +145,7 @@ const AddReportModal = ({
 
   const reportFormik = useFormik({
     initialValues: {
+      password: "",
       reportType: "findOnly",
       location: "",
       when,
@@ -213,6 +216,16 @@ const AddReportModal = ({
       </ModalTitle>
       <ModalContainer onSubmit={reportFormik.handleSubmit}>
         <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
+
+        <DivisionTitle>パスワード設定</DivisionTitle>
+        <DivisionContainer>
+          <DivisionItem className="w-full">
+            <ItemLabel htmlFor="password">
+              パスワード(<span className="text-red-500">*</span>)
+            </ItemLabel>
+            <Field placeholder="レポート修正時に使うパスワード" type="password" name="password" errors={reportFormik.errors.password} onChange={reportFormik.handleChange} value={reportFormik.values.password} />
+          </DivisionItem>
+        </DivisionContainer>
 
         <DivisionTitle>通報内容</DivisionTitle>
         <DivisionContainer>

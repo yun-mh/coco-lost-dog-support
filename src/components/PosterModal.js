@@ -34,7 +34,7 @@ const ImageContainer = styled.div`
 
 const Image = styled.div`
   background-image: url(${({ url }) => url});
-  ${tw`w-full h-quarter md:h-half bg-cover`}
+  ${tw`w-full h-quarter md:h-half bg-cover bg-center`}
 `;
 
 const Divide = styled.hr`
@@ -118,13 +118,13 @@ const PosterModal = ({
             </InfoTitle>
             <ImageContainer>
                 <Carousel value={subValue} onChange={onChangeSub}>
-                    {thread.images ? (
+                    {thread.images.length > 0 ? (
                         thread.images.map((image) => <Image key={image.id} url={image.url} />)
                     ) : (
-                        <Image url={dogImg.url} />
+                        <Image url={dogImg} />
                     )}
                 </Carousel>
-                <Dots value={subValue} onChange={onChangeSub} number={thread.images.length} />
+                <Dots value={subValue} onChange={onChangeSub} number={thread.images.length || 1} />
             </ImageContainer>
 
             <LostInfo>

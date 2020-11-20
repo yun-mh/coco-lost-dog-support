@@ -17,7 +17,7 @@ const Button = ({ className, loading = false, type, title, use = "standard", onC
       <Btn
         type={type}
         onClick={onClick}
-        className={use === "accent" ? "bg-primary hover:bg-primary-light" : use === "standard" ? "border border-gray-600" : use === "simple" ? "bg-blue-400 hover:bg-blue-500" : use === "modify" ? "bg-secondary hover:bg-secondary-light" : "bg-red-400 hover:bg-red-500"}
+        className={use === "accent" ? "bg-primary hover:bg-primary-light" : use === "standard" ? "border border-gray-600 hover:bg-gray-100" : use === "simple" ? "bg-blue-400 hover:bg-blue-500" : use === "modify" ? "bg-secondary hover:bg-secondary-light" : "bg-red-400 hover:bg-red-500"}
       >
         {loading ? (
           <ButtonLoader />
