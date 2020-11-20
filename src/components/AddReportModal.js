@@ -80,6 +80,9 @@ const AddReportModal = ({
 
   const validate = (values) => {
     const errors = {};
+    if (!values.password) {
+      errors.password = "パスワードを設定してください。";
+    }
     if (!values.reportType) {
       errors.reportType = "対応タイプを選んでください。";
     }
@@ -100,7 +103,7 @@ const AddReportModal = ({
   };
 
   const onSubmit = async () => {
-    if (reportFormik.values.location !== "" && reportFormik.values.name !== "" && reportFormik.values.phone !== "") {
+    if (reportFormik.values.password !== "" && reportFormik.values.location !== "" && reportFormik.values.name !== "" && reportFormik.values.phone !== "") {
       setLoading(true);
       try {
         const {

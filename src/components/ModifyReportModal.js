@@ -59,6 +59,138 @@ const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
+const Authentication = ({ authenticate }) => {
+  return (
+    <div className="h-full flex flex-col justify-center">
+      <DivisionTitle>修正するためのパスワードを入力してください。</DivisionTitle>
+      <DivisionContainer>
+        <DivisionItem className="w-full">
+          <Field placeholder="レポート作成時に登録したパスワード" type="password" name="password" />
+        </DivisionItem>
+      </DivisionContainer>
+      <Button type="button" use="accent" title="認証" onClick={authenticate} />
+    </div>
+  )
+};
+
+const Content = ({
+  loading,
+  reportFormik,
+  when,
+  setWhen,
+  isDateModalVisible,
+  setIsDateModalVisible,
+  getCurrentLocation,
+  compassLoading,
+  locationErr,
+  plotCurrentLocationOnMap,
+  mapOn,
+  lat,
+  lon,
+  closeModal
+}) => {
+  return (
+    <>
+      <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
+
+      <DivisionTitle>通報内容</DivisionTitle>
+      <DivisionContainer>
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="reportType">
+            対応タイプ(<span className="text-red-500">*</span>)
+          </ItemLabel>
+          <div className="relative">
+            <select value={reportFormik.values.reportType} onChange={reportFormik.handleChange} className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="reportType">
+              <option value="findOnly">発見のみ</option>
+              <option value="beingWith">犬を直接保護中</option>
+              <option value="otherPlaces">他の所に預けた</option>
+            </select>
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
+              <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+          </div>
+        </DivisionItem>
+
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="when">
+            発見日時(<span className="text-red-500">*</span>)
+          </ItemLabel>
+          <DatePicker name="when" className="bg-gray-100" birthdate={when} setBirthdate={setWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
+        </DivisionItem>
+      </DivisionContainer>
+
+      <DivisionContainer>
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="location">
+            発見場所(<span className="text-red-500">*</span>)
+          </ItemLabel>
+          <div className="flex">
+            <Field hasError={false} placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="location" errors={reportFormik.errors.location} onChange={reportFormik.handleChange} value={reportFormik.values.location} />
+            <CompassButton onClick={getCurrentLocation} >
+              { !compassLoading ? <Compass className="text-gray-700" /> : <ButtonLoader />}
+            </CompassButton>
+          </div>
+          { reportFormik.errors.location !== undefined && <p className="text-sm text-red-500 italic mb-2">{reportFormik.errors.location}</p> }
+          { locationErr && <p className="text-sm text-red-500 italic mb-2">位置情報取得に失敗しました。</p> }
+          <Button type="button" title="設定" onClick={plotCurrentLocationOnMap} />
+        </DivisionItem>
+      </DivisionContainer>
+
+      {mapOn && (<DivisionContainer>
+        <GoogleMapComponent
+          isMarkerShown
+          lat={lat}
+          lng={lon}
+          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+          loadingElement={<div style={{ width: "100%", height: `100%` }} />}
+          containerElement={<div style={{ width: "100%", height: `400px`, padding: "1rem" }} />}
+          mapElement={<div style={{ width: "100%", height: `100%` }} />}
+        />
+      </DivisionContainer>)}
+
+      <Divide />
+
+      <DivisionTitle>通報者情報</DivisionTitle>
+      <DivisionContainer>
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="name">
+            通報者名(<span className="text-red-500">*</span>)
+          </ItemLabel>
+          <Field placeholder="例）犬山犬男" type="text" name="name" errors={reportFormik.errors.name} onChange={reportFormik.handleChange} value={reportFormik.values.name} />
+        </DivisionItem>
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="phone">
+            連絡先(<span className="text-red-500">*</span>)
+          </ItemLabel>
+          <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={reportFormik.errors.phone} onChange={reportFormik.handleChange} value={reportFormik.values.phone} />
+        </DivisionItem>
+      </DivisionContainer>
+
+      <DivisionContainer>
+        <DivisionItem className="w-full">
+          <ItemLabel htmlFor="memo">
+            メモ
+          </ItemLabel>
+          <TextareaAutosize
+            className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
+            name="memo"
+            maxRows={3}
+            value={reportFormik.values.memo}
+            onChange={reportFormik.handleChange}
+            placeholder="例）飼い主に残したい特記事項があれば書いてください。"
+            async={true}
+          />
+        </DivisionItem>
+      </DivisionContainer>
+
+      <div className="flex justify-around mt-10 mb-5">
+        <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
+        <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
+      </div>
+    </>
+  )
+};
+
 const ModifyReportModal = ({
   data,
   dogId,
@@ -66,7 +198,7 @@ const ModifyReportModal = ({
   closeModal
 }) => {
   const { lock, unlock } = useScrollBodyLock();
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [when, setWhen] = useState(data.when);
   const [loading, setLoading] = useState(false);
   const [compassLoading, setCompassLoading] = useState(false);
@@ -150,13 +282,19 @@ const ModifyReportModal = ({
   
   useEffect(() => {
     reportFormik.values.when = when;
-  }, [when, reportFormik.values])
+  }, [when, reportFormik.values]);
+
+  const authenticate = () => {
+    setIsAuthenticated(true);
+  };
 
   const getCurrentLocation = () => {
     async function success(position) {
+      console.log(position)
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&language=ja`
       );
+      console.log(res)
       const resData = await res.json();
       const address = resData.results[0].formatted_address.split(" ")[1];
       
@@ -165,6 +303,7 @@ const ModifyReportModal = ({
     }
 
     function error() {
+      setCompassLoading(false);
       setLocationErr(true);
     }
 
@@ -172,7 +311,8 @@ const ModifyReportModal = ({
 
     if(navigator.geolocation) {
       setCompassLoading(true);
-      navigator.geolocation.getCurrentPosition(success, error);
+      console.log("start")
+      navigator.geolocation.getCurrentPosition(success, error, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
     }
   };
 
@@ -206,102 +346,26 @@ const ModifyReportModal = ({
         </CloseButton>
       </ModalTitle>
       <ModalContainer onSubmit={reportFormik.handleSubmit}>
-        <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
-
-        <DivisionTitle>通報内容</DivisionTitle>
-        <DivisionContainer>
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="reportType">
-              対応タイプ(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <div className="relative">
-              <select value={reportFormik.values.reportType} onChange={reportFormik.handleChange} className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="reportType">
-                <option value="findOnly">発見のみ</option>
-                <option value="beingWith">犬を直接保護中</option>
-                <option value="otherPlaces">他の所に預けた</option>
-              </select>
-              <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-              </div>
-            </div>
-          </DivisionItem>
-
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="when">
-              発見日時(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <DatePicker name="when" className="bg-gray-100" birthdate={when} setBirthdate={setWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <DivisionContainer>
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="location">
-              発見場所(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <div className="flex">
-              <Field hasError={false} placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="location" errors={reportFormik.errors.location} onChange={reportFormik.handleChange} value={reportFormik.values.location} />
-              <CompassButton onClick={getCurrentLocation} >
-                { !compassLoading ? <Compass className="text-gray-700" /> : <ButtonLoader />}
-              </CompassButton>
-            </div>
-            { reportFormik.errors.location !== undefined && <p className="text-sm text-red-500 italic mb-2">{reportFormik.errors.location}</p> }
-            { locationErr && <p className="text-sm text-red-500 italic mb-2">位置情報取得に失敗しました。</p> }
-            <Button type="button" title="設定" onClick={plotCurrentLocationOnMap} />
-          </DivisionItem>
-        </DivisionContainer>
-
-        {mapOn && (<DivisionContainer>
-          <GoogleMapComponent
-            isMarkerShown
+        { isAuthenticated ? (
+          <Content
+            loading={loading}
+            reportFormik={reportFormik} 
+            when={when} 
+            setWhen={setWhen} 
+            isDateModalVisible={isDateModalVisible} 
+            setIsDateModalVisible={setIsDateModalVisible}
+            closeModal={closeModal}
+            getCurrentLocation={getCurrentLocation}
+            compassLoading={compassLoading}
+            locationErr={locationErr}
+            plotCurrentLocationOnMap={plotCurrentLocationOnMap}
+            mapOn={mapOn}
             lat={lat}
-            lng={lon}
-            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-            loadingElement={<div style={{ width: "100%", height: `100%` }} />}
-            containerElement={<div style={{ width: "100%", height: `400px`, padding: "1rem" }} />}
-            mapElement={<div style={{ width: "100%", height: `100%` }} />}
+            lon={lon}
           />
-        </DivisionContainer>)}
-
-        <Divide />
-
-        <DivisionTitle>通報者情報</DivisionTitle>
-        <DivisionContainer>
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="name">
-              通報者名(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <Field placeholder="例）犬山犬男" type="text" name="name" errors={reportFormik.errors.name} onChange={reportFormik.handleChange} value={reportFormik.values.name} />
-          </DivisionItem>
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="phone">
-              連絡先(<span className="text-red-500">*</span>)
-            </ItemLabel>
-            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={reportFormik.errors.phone} onChange={reportFormik.handleChange} value={reportFormik.values.phone} />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <DivisionContainer>
-          <DivisionItem className="w-full">
-            <ItemLabel htmlFor="memo">
-              メモ
-            </ItemLabel>
-            <TextareaAutosize
-              className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
-              name="memo"
-              maxRows={3}
-              value={reportFormik.values.memo}
-              onChange={reportFormik.handleChange}
-              placeholder="例）飼い主に残したい特記事項があれば書いてください。"
-              async={true}
-            />
-          </DivisionItem>
-        </DivisionContainer>
-
-        <div className="flex justify-around mt-10 mb-5">
-          <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
-          <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
-        </div>
+        ) : (
+          <Authentication authenticate={authenticate} />
+        )}
       </ModalContainer>
     </Modal>
   );

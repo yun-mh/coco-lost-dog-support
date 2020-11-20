@@ -101,15 +101,15 @@ const Report = ({ report, dogId }) => {
                     </div>
                 </ReportDetail>
                 <ReportFooter>{ moment(report.createdAt).format('YYYY-MM-D ah:mm:ss') }</ReportFooter>
+                <Button type="button" use="accent" title="レポート修正" onClick={openRModifyModal} />
             </ReportContentContainer>
 
-            {/* <Button use="accent" title="レポート修正" onClick={openRModifyModal} />
             <ModifyReportModal
                 data={report}
                 dogId={dogId}
                 modalIsOpen={modifyReportModalIsOpen}
                 closeModal={closeRModifyModal}
-            /> */}
+            />
         </ReportContainer>
     )
 };
