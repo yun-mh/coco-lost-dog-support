@@ -10,6 +10,10 @@ const NavContainer = styled.nav`
   ${tw`fixed w-full flex justify-center top-0 left-0 bg-white z-40`}
 `;
 
+const NavFlex = styled.div`
+  ${tw`w-full flex flex-col items-center`}
+`;
+
 const NavBar = styled.div`
   ${tw`container px-2 sm:px-6 lg:px-8`}
   box-shadow: 0 1.5px 0px rgba(0, 0, 0, 0.1);
@@ -36,7 +40,7 @@ const TitleText = styled.span`
 `;
 
 const MobileMenu = styled.div`
-  ${tw`sm:hidden`}
+  ${tw`sm:hidden w-full`}
 `;
 
 const MenuList = styled.div``;
@@ -91,6 +95,7 @@ const Header = ({ user, loading, data }) => {
 
   return (
     <NavContainer>
+      <NavFlex>
       <NavBar>
         <NavBarContainer>
           <MenuBtnContainer>
@@ -204,6 +209,7 @@ const Header = ({ user, loading, data }) => {
         closeModal={closeCreateModal}
         dogId={data?.viewDog?.id}
       />
+      </NavFlex>
     </NavContainer>
   );
 };
