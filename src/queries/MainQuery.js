@@ -35,6 +35,7 @@ export const VIEW_DOG = gql`
         email
         reports {
           id
+          password
           location
           when
           memo

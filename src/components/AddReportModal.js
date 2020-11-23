@@ -12,8 +12,8 @@ import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
 import ButtonLoader from "./ButtonLoader";
-import GoogleMapComponent from "./Map";
 import { ADD_REPORT, VIEW_DOG } from "../queries/MainQuery";
+import MapComponent from "./MapComponent";
 
 Modal.setAppElement("#root");
 
@@ -71,8 +71,8 @@ const AddReportModal = ({
   const [loading, setLoading] = useState(false);
   const [compassLoading, setCompassLoading] = useState(false);
   const [mapOn, setMapOn] = useState(false);
-  const [lat, setLat] = useState();
-  const [lon, setLon] = useState();
+  const [lat, setLat] = useState(35.6803997);
+  const [lon, setLon] = useState(139.4606805);
   const [locationErr, setLocationErr] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
@@ -274,15 +274,7 @@ const AddReportModal = ({
         </DivisionContainer>
 
         {mapOn && (<DivisionContainer>
-          <GoogleMapComponent
-            isMarkerShown
-            lat={lat}
-            lng={lon}
-            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-            loadingElement={<div style={{ width: "100%", height: `100%` }} />}
-            containerElement={<div style={{ width: "100%", height: `400px`, padding: "1rem" }} />}
-            mapElement={<div style={{ width: "100%", height: `100%` }} />}
-          />
+          <MapComponent lat={lat} lng={lon} />
         </DivisionContainer>)}
 
         <Divide />

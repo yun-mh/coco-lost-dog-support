@@ -45,7 +45,7 @@ const ReportsContainer = styled.div`
 const Collapse = ({ user, thread, dogId, dogImg }) => {
     const history = useHistory();
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(!thread.isClosed ? true : false);
     const [createReportModalIsOpen, setCreateReportOpen] = useState(false);
     const [posterIsOpen, setPosterOpen] = useState(false);
     const [modifyThreadModalIsOpen, setModifyThreadOpen] = useState(false);
@@ -126,6 +126,9 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
                         <Poster user={user} dogId={dogId} dogImg={dogImg} thread={thread} />
                     </InitialInfoContainer>
                     <ReportInfoContainer>
+                        <div className="mb-2 lg:hidden">
+                            <Button use="simple" title="詳細情報を見る" onClick={openPosterModal} />
+                        </div>
                         { !thread.isClosed && user !== "" && (
                             <div className="mb-2 lg:hidden">
                                 <Button use="modify" title="迷子情報修正" onClick={openModifyModal} />
@@ -136,9 +139,6 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
                                 <Button use="other" title="帰還完了設定" onClick={cameBack} />
                             </div>
                         )}
-                        <div className="mb-2 lg:hidden">
-                            <Button use="simple" title="詳細情報を見る" onClick={openPosterModal} />
-                        </div>
                         <ReportsContainer>
                             <Timeline dogId={dogId} thread={thread} />
                         </ReportsContainer>

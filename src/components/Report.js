@@ -4,8 +4,8 @@ import tw from "twin.macro";
 import moment from "moment";
 import ModifyReportModal from "./ModifyReportModal";
 import Button from "./Button";
-import GoogleMapComponent from "./Map";
 import { Anchor, Eye, LogIn } from "react-feather";
+import MapComponent from "./MapComponent";
 
 const ReportContainer = styled.div`
     ${tw`md:ml-10 mb-8 flex items-center w-full`}
@@ -32,9 +32,8 @@ const ReportFooter = styled.div`
 `;
 
 const Report = ({ report, dogId }) => {
-    const [lat, setLat] = useState();
-    const [lng, setLng] = useState();
-
+    const [lat, setLat] = useState(35.6803997);
+    const [lng, setLng] = useState(139.4606805);
     const [modifyReportModalIsOpen, setModifyReportOpen] = useState(false);
 
     const getCoordinates = async () => {
@@ -51,7 +50,7 @@ const Report = ({ report, dogId }) => {
 
     useEffect(() => {
         getCoordinates();
-    }, [])
+    })
 
     const openRModifyModal = () => {
         setModifyReportOpen(true);
@@ -82,22 +81,12 @@ const Report = ({ report, dogId }) => {
                         <span className="text-blue-600 font-semibold">{ report.location }</span>
                         { report.reportType === "findOnly" ? "で発見しました！" : report.reportType === "beingWith" ? "で自分と一緒にいます！" : "で発見され、他の所に預けました！" }
                     </div>
-                    <div>
-                        <GoogleMapComponent
-                            isMarkerShown
-                            lat={lat}
-                            lng={lng}
-                            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-                            loadingElement={<div style={{ width: "100%", height: `100%` }} />}
-                            containerElement={<div style={{ width: "100%", height: `200px`, padding: ".5rem" }} />}
-                            mapElement={<div style={{ width: "100%", height: `100%` }} />}
-                        />
-                    </div>
+                    <MapComponent lat={lat} lng={lng} />
                     <div>
                         <div>通報した人の情報</div>
-                        <div>名前：<span className="font-semibold text-blue-600">{ report.name }</span></div>
-                        <div>連絡先：<span className="font-semibold text-blue-600">{ report.phone }</span></div>
-                        <div>メモ：<span className="font-semibold text-blue-600">{ report.memo }</span></div>
+                        <div className="text-gray-600">名前：<span className="font-semibold text-blue-600">{ report.name }</span></div>
+                        <div className="text-gray-600">連絡先：<span className="font-semibold text-blue-600">{ report.phone }</span></div>
+                        <div className="text-gray-600">メモ：<span className="font-semibold text-blue-600">{ report.memo }</span></div>
                     </div>
                 </ReportDetail>
                 <ReportFooter>{ moment(report.createdAt).format('YYYY-MM-D ah:mm:ss') }</ReportFooter>

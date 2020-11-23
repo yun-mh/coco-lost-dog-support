@@ -12,6 +12,9 @@ module.exports = {
         'white': theme('colors.white'),
       }),
       extend: {
+        width: {
+          "80": "20rem",
+        },
         height: {
           threequarter: "75vh",
           half: "50vh",
@@ -19,6 +22,7 @@ module.exports = {
           "1/2": "50%",
           entire: "calc(100vh - 8rem)",
           chat: "calc(100vh - 16rem)",
+          "80": "20rem",
         },
         maxHeight: {
           "1/2": "50%",

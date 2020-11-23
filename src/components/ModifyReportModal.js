@@ -7,13 +7,14 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import TextareaAutosize from "react-autosize-textarea";
 import { useMutation } from "@apollo/client";
+import bcrypt from "bcryptjs";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
 import DatePicker from "./DatePicker";
 import Button from "./Button";
 import Field from "./Field";
 import ButtonLoader from "./ButtonLoader";
-import GoogleMapComponent from "./Map";
 import { MODIFY_REPORT, VIEW_DOG } from "../queries/MainQuery";
+import MapComponent from "./MapComponent";
 
 Modal.setAppElement("#root");
 
@@ -27,6 +28,11 @@ const CloseButton = styled.div`
 `;
 
 const ModalContainer = styled.form`
+  ${tw`mt-12 p-5 flex flex-col overflow-y-auto`}
+  height: calc(100% - 3rem);
+`;
+
+const ModalContainerWithoutForm = styled.div`
   ${tw`mt-12 p-5 flex flex-col overflow-y-auto`}
   height: calc(100% - 3rem);
 `;
@@ -59,13 +65,13 @@ const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
-const Authentication = ({ authenticate }) => {
+const Authentication = ({ authenticate, errors, pwd, setPwd }) => {
   return (
     <div className="h-full flex flex-col justify-center">
       <DivisionTitle>修正するためのパスワードを入力してください。</DivisionTitle>
       <DivisionContainer>
         <DivisionItem className="w-full">
-          <Field placeholder="レポート作成時に登録したパスワード" type="password" name="password" />
+          <Field placeholder="レポート作成時に登録したパスワード" type="password" name="password" value={pwd} onChange={(e) => setPwd(e.target.value)} errors={errors} />
         </DivisionItem>
       </DivisionContainer>
       <Button type="button" use="accent" title="認証" onClick={authenticate} />
@@ -137,15 +143,7 @@ const Content = ({
       </DivisionContainer>
 
       {mapOn && (<DivisionContainer>
-        <GoogleMapComponent
-          isMarkerShown
-          lat={lat}
-          lng={lon}
-          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-          loadingElement={<div style={{ width: "100%", height: `100%` }} />}
-          containerElement={<div style={{ width: "100%", height: `400px`, padding: "1rem" }} />}
-          mapElement={<div style={{ width: "100%", height: `100%` }} />}
-        />
+        <MapComponent lat={lat} lng={lon} />
       </DivisionContainer>)}
 
       <Divide />
@@ -199,12 +197,14 @@ const ModifyReportModal = ({
 }) => {
   const { lock, unlock } = useScrollBodyLock();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pwd, setPwd] = useState("");
+  const [errors, setErrors] = useState(undefined);
   const [when, setWhen] = useState(data.when);
   const [loading, setLoading] = useState(false);
   const [compassLoading, setCompassLoading] = useState(false);
   const [mapOn, setMapOn] = useState(false);
-  const [lat, setLat] = useState();
-  const [lon, setLon] = useState();
+  const [lat, setLat] = useState(35.6803997);
+  const [lon, setLon] = useState(139.4606805);
   const [locationErr, setLocationErr] = useState(false);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
@@ -284,17 +284,19 @@ const ModifyReportModal = ({
     reportFormik.values.when = when;
   }, [when, reportFormik.values]);
 
-  const authenticate = () => {
-    setIsAuthenticated(true);
+  const authenticate = async () => {
+    if (await bcrypt.compare(pwd, data.password)) {
+      setIsAuthenticated(true);
+    } else {
+      setErrors("パスワードをもう一度確認してください。");
+    }
   };
 
   const getCurrentLocation = () => {
     async function success(position) {
-      console.log(position)
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&language=ja`
       );
-      console.log(res)
       const resData = await res.json();
       const address = resData.results[0].formatted_address.split(" ")[1];
       
@@ -311,8 +313,7 @@ const ModifyReportModal = ({
 
     if(navigator.geolocation) {
       setCompassLoading(true);
-      console.log("start")
-      navigator.geolocation.getCurrentPosition(success, error, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
+      navigator.geolocation.getCurrentPosition(success, error);
     }
   };
 
@@ -321,9 +322,9 @@ const ModifyReportModal = ({
     try {
       const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${reportFormik.values.location}components=country:JP&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`)
       const resData = await res.json();
-      const { geometry: { location: { lat, lng }} } = resData.results[0];
+      const { geometry: { location: { lat, lng } } } = resData.results[0];
       setLat(lat);
-      setLon(lng)
+      setLon(lng);
     } catch(e) {
       console.log(e);
     }
@@ -345,28 +346,30 @@ const ModifyReportModal = ({
           <X size={30} className="text-gray-600 cursor-pointer" />
         </CloseButton>
       </ModalTitle>
-      <ModalContainer onSubmit={reportFormik.handleSubmit}>
         { isAuthenticated ? (
-          <Content
-            loading={loading}
-            reportFormik={reportFormik} 
-            when={when} 
-            setWhen={setWhen} 
-            isDateModalVisible={isDateModalVisible} 
-            setIsDateModalVisible={setIsDateModalVisible}
-            closeModal={closeModal}
-            getCurrentLocation={getCurrentLocation}
-            compassLoading={compassLoading}
-            locationErr={locationErr}
-            plotCurrentLocationOnMap={plotCurrentLocationOnMap}
-            mapOn={mapOn}
-            lat={lat}
-            lon={lon}
-          />
+          <ModalContainer onSubmit={reportFormik.handleSubmit}>
+            <Content
+              loading={loading}
+              reportFormik={reportFormik} 
+              when={when} 
+              setWhen={setWhen} 
+              isDateModalVisible={isDateModalVisible} 
+              setIsDateModalVisible={setIsDateModalVisible}
+              closeModal={closeModal}
+              getCurrentLocation={getCurrentLocation}
+              compassLoading={compassLoading}
+              locationErr={locationErr}
+              plotCurrentLocationOnMap={plotCurrentLocationOnMap}
+              mapOn={mapOn}
+              lat={lat}
+              lon={lon}
+            />
+          </ModalContainer>
         ) : (
-          <Authentication authenticate={authenticate} />
+          <ModalContainerWithoutForm>
+            <Authentication authenticate={authenticate} pwd={pwd} setPwd={setPwd} errors={errors} />
+          </ModalContainerWithoutForm>
         )}
-      </ModalContainer>
     </Modal>
   );
 };

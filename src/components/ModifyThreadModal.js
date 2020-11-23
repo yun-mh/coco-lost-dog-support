@@ -4,7 +4,6 @@ import tw from "twin.macro";
 import { X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
-import moment from "moment";
 import { toast } from "react-toastify";
 import ImageUploading from 'react-images-uploading';
 import TextareaAutosize from "react-autosize-textarea";
@@ -101,11 +100,10 @@ const ModifyThreadModal = ({
 
       let imageLocations, defaultImages = [];
       if (images.length > 0) {
-        console.log("here")
         const formData = new FormData();
         for (let image of images) {
           if (image.id !== undefined) {
-            defaultImages.push(image);
+            defaultImages.push(image.id);
           } else {
             formData.append("file", image.file);
           }
@@ -113,14 +111,14 @@ const ModifyThreadModal = ({
         const {
           data: { locations }
         } = await axios.post(
-            "https://api-coco.herokuapp.com/api/upload",
-            formData,
-            {
-              headers: {
-                "content-type": "multipart/form-data",
-              },
-            }
-          );
+          "https://api-coco.herokuapp.com/api/upload",
+          formData,
+          {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          }
+        );
         imageLocations = [...locations];
       }
       try {
@@ -128,6 +126,7 @@ const ModifyThreadModal = ({
           data: { modifyThread },
         } = await modifyThreadMutation({
           variables: {
+            id: data.id,
             name: formik.values.name,
             breed: formik.values.breed,
             age: formik.values.age,
@@ -135,7 +134,7 @@ const ModifyThreadModal = ({
             size: formik.values.size,
             weight: formik.values.weight,
             feature: formik.values.feature,
-            images: [...defaultImages, ...imageLocations],
+            images: imageLocations ? [...defaultImages, ...imageLocations] : [...defaultImages],
             lostWhen: formik.values.lostWhen,
             lostWhere: formik.values.lostWhere,
             owner: formik.values.owner,
@@ -201,8 +200,6 @@ const ModifyThreadModal = ({
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
   }, [lostWhen, formik.values])
-
-  console.log(images)
 
   return (
     <Modal

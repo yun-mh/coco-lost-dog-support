@@ -24,7 +24,7 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
   }, [data]);
 
   return (
-    <>
+    <div className="bg-secondary-light min-h-screen">
       <Header user={user} loading={loading} data={data} />
       <div className="pt-16 pb-2">
         {loading ? (
@@ -133,7 +133,7 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
           <div>None</div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
