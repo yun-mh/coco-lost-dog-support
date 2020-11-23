@@ -7,6 +7,8 @@ import DogPresenter from "./DogPresenter";
 const DogContainer = ({ location }) => {
     const { dogId } = useParams();
 
+    console.log(dogId)
+
     const [user, setUser] = useState("");
 
     const { loading, data } = useQuery(VIEW_DOG, { variables: { id: dogId } });
