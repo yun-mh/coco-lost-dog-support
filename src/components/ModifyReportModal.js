@@ -412,8 +412,6 @@ const ModifyReportModal = ({ data, token, dogId, modalIsOpen, closeModal }) => {
     }
   };
 
-  console.log(token);
-
   return (
     <Modal
       isOpen={modalIsOpen}
