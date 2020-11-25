@@ -154,7 +154,7 @@ const Collapse = ({ user, token, thread, dogId, dogImg }) => {
               </div>
             )}
             <ReportsContainer>
-              <Timeline dogId={dogId} thread={thread} />
+              <Timeline token={token} dogId={dogId} thread={thread} />
             </ReportsContainer>
           </ReportInfoContainer>
         </CollapseContentContainer>
@@ -168,7 +168,6 @@ const Collapse = ({ user, token, thread, dogId, dogImg }) => {
       />
       <ModifyThreadModal
         data={thread}
-        token={token}
         dogId={dogId}
         modalIsOpen={modifyThreadModalIsOpen}
         closeModal={closeModifyModal}

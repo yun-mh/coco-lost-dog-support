@@ -37,7 +37,7 @@ const InitialReportFooter = styled.div`
   ${tw`text-xs md:text-sm leading-snug tracking-wide text-gray-600 text-opacity-100 text-right`}
 `;
 
-const Timeline = ({ thread, dogId }) => {
+const Timeline = ({ token, thread, dogId }) => {
   return (
     <ReportContainer>
       <ReportHeader>タイムライン</ReportHeader>
@@ -61,7 +61,12 @@ const Timeline = ({ thread, dogId }) => {
         </InitialReportContainer>
         {thread.reports &&
           thread.reports.map((report) => (
-            <Report key={report.id} report={report} dogId={dogId} />
+            <Report
+              key={report.id}
+              token={token}
+              report={report}
+              dogId={dogId}
+            />
           ))}
       </TimelineContainer>
     </ReportContainer>
