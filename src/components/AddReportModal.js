@@ -61,9 +61,10 @@ const Divide = styled.hr`
 
 const AddReportModal = ({
   dogId,
+  token,
   threadId,
   modalIsOpen,
-  closeModal
+  closeModal,
 }) => {
   const { lock, unlock } = useScrollBodyLock();
 
@@ -103,7 +104,12 @@ const AddReportModal = ({
   };
 
   const onSubmit = async () => {
-    if (reportFormik.values.password !== "" && reportFormik.values.location !== "" && reportFormik.values.name !== "" && reportFormik.values.phone !== "") {
+    if (
+      reportFormik.values.password !== "" &&
+      reportFormik.values.location !== "" &&
+      reportFormik.values.name !== "" &&
+      reportFormik.values.phone !== ""
+    ) {
       setLoading(true);
       try {
         const {
@@ -118,10 +124,9 @@ const AddReportModal = ({
             name: reportFormik.values.name,
             phone: reportFormik.values.phone,
             memo: reportFormik.values.memo,
+            token,
           },
-          refetchQueries: () => [
-            { query: VIEW_DOG, variables: { id: dogId } },
-          ], 
+          refetchQueries: () => [{ query: VIEW_DOG, variables: { id: dogId } }],
         });
         if (addReport) {
           closeModal();
@@ -159,10 +164,10 @@ const AddReportModal = ({
     validate,
     onSubmit,
   });
-  
+
   useEffect(() => {
     reportFormik.values.when = when;
-  }, [when, reportFormik.values])
+  }, [when, reportFormik.values]);
 
   const getCurrentLocation = () => {
     async function success(position) {
@@ -171,7 +176,7 @@ const AddReportModal = ({
       );
       const resData = await res.json();
       const address = resData.results[0].formatted_address.split(" ")[1];
-      
+
       reportFormik.values.location = address;
       setCompassLoading(false);
     }
@@ -182,7 +187,7 @@ const AddReportModal = ({
 
     setLocationErr(false);
 
-    if(navigator.geolocation) {
+    if (navigator.geolocation) {
       setCompassLoading(true);
       navigator.geolocation.getCurrentPosition(success, error);
     }
@@ -191,12 +196,18 @@ const AddReportModal = ({
   const plotCurrentLocationOnMap = async () => {
     setMapOn(true);
     try {
-      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${reportFormik.values.location}components=country:JP&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`)
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${reportFormik.values.location}components=country:JP&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
+      );
       const resData = await res.json();
-      const { geometry: { location: { lat, lng }} } = resData.results[0];
+      const {
+        geometry: {
+          location: { lat, lng },
+        },
+      } = resData.results[0];
       setLat(lat);
-      setLon(lng)
-    } catch(e) {
+      setLon(lng);
+    } catch (e) {
       console.log(e);
     }
   };
@@ -218,7 +229,10 @@ const AddReportModal = ({
         </CloseButton>
       </ModalTitle>
       <ModalContainer onSubmit={reportFormik.handleSubmit}>
-        <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
+        <Directions>
+          <span className="text-red-500">*</span>
+          がついている項目は記入必須です。
+        </Directions>
 
         <DivisionTitle>パスワード設定</DivisionTitle>
         <DivisionContainer>
@@ -226,7 +240,14 @@ const AddReportModal = ({
             <ItemLabel htmlFor="password">
               パスワード(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="レポート修正時に使うパスワード" type="password" name="password" errors={reportFormik.errors.password} onChange={reportFormik.handleChange} value={reportFormik.values.password} />
+            <Field
+              placeholder="レポート修正時に使うパスワード"
+              type="password"
+              name="password"
+              errors={reportFormik.errors.password}
+              onChange={reportFormik.handleChange}
+              value={reportFormik.values.password}
+            />
           </DivisionItem>
         </DivisionContainer>
 
@@ -237,13 +258,24 @@ const AddReportModal = ({
               対応タイプ(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div className="relative">
-              <select value={reportFormik.values.reportType} onChange={reportFormik.handleChange} className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded" name="reportType">
+              <select
+                value={reportFormik.values.reportType}
+                onChange={reportFormik.handleChange}
+                className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded"
+                name="reportType"
+              >
                 <option value="findOnly">発見のみ</option>
                 <option value="beingWith">犬を直接保護中</option>
                 <option value="otherPlaces">他の所に預けた</option>
               </select>
               <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
               </div>
             </div>
           </DivisionItem>
@@ -252,7 +284,14 @@ const AddReportModal = ({
             <ItemLabel htmlFor="when">
               発見日時(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <DatePicker name="when" className="bg-gray-100" birthdate={when} setBirthdate={setWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
+            <DatePicker
+              name="when"
+              className="bg-gray-100"
+              birthdate={when}
+              setBirthdate={setWhen}
+              open={isDateModalVisible}
+              toggleOpen={setIsDateModalVisible}
+            />
           </DivisionItem>
         </DivisionContainer>
 
@@ -262,20 +301,46 @@ const AddReportModal = ({
               発見場所(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div className="flex">
-              <Field hasError={false} placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="location" errors={reportFormik.errors.location} onChange={reportFormik.handleChange} value={reportFormik.values.location} />
-              <CompassButton onClick={getCurrentLocation} >
-                { !compassLoading ? <Compass className="text-gray-700" /> : <ButtonLoader />}
+              <Field
+                hasError={false}
+                placeholder="例）愛知県名古屋市中区正木１丁目"
+                type="text"
+                name="location"
+                errors={reportFormik.errors.location}
+                onChange={reportFormik.handleChange}
+                value={reportFormik.values.location}
+              />
+              <CompassButton onClick={getCurrentLocation}>
+                {!compassLoading ? (
+                  <Compass className="text-gray-700" />
+                ) : (
+                  <ButtonLoader />
+                )}
               </CompassButton>
             </div>
-            { reportFormik.errors.location !== undefined && <p className="text-sm text-red-500 italic mb-2">{reportFormik.errors.location}</p> }
-            { locationErr && <p className="text-sm text-red-500 italic mb-2">位置情報取得に失敗しました。</p> }
-            <Button type="button" title="設定" onClick={plotCurrentLocationOnMap} />
+            {reportFormik.errors.location !== undefined && (
+              <p className="text-sm text-red-500 italic mb-2">
+                {reportFormik.errors.location}
+              </p>
+            )}
+            {locationErr && (
+              <p className="text-sm text-red-500 italic mb-2">
+                位置情報取得に失敗しました。
+              </p>
+            )}
+            <Button
+              type="button"
+              title="設定"
+              onClick={plotCurrentLocationOnMap}
+            />
           </DivisionItem>
         </DivisionContainer>
 
-        {mapOn && (<DivisionContainer>
-          <MapComponent lat={lat} lng={lon} />
-        </DivisionContainer>)}
+        {mapOn && (
+          <DivisionContainer>
+            <MapComponent lat={lat} lng={lon} />
+          </DivisionContainer>
+        )}
 
         <Divide />
 
@@ -285,21 +350,33 @@ const AddReportModal = ({
             <ItemLabel htmlFor="name">
               通報者名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）犬山犬男" type="text" name="name" errors={reportFormik.errors.name} onChange={reportFormik.handleChange} value={reportFormik.values.name} />
+            <Field
+              placeholder="例）犬山犬男"
+              type="text"
+              name="name"
+              errors={reportFormik.errors.name}
+              onChange={reportFormik.handleChange}
+              value={reportFormik.values.name}
+            />
           </DivisionItem>
           <DivisionItem className="w-full">
             <ItemLabel htmlFor="phone">
               連絡先(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={reportFormik.errors.phone} onChange={reportFormik.handleChange} value={reportFormik.values.phone} />
+            <Field
+              placeholder="例）070-1234-5678"
+              type="text"
+              name="phone"
+              errors={reportFormik.errors.phone}
+              onChange={reportFormik.handleChange}
+              value={reportFormik.values.phone}
+            />
           </DivisionItem>
         </DivisionContainer>
 
         <DivisionContainer>
           <DivisionItem className="w-full">
-            <ItemLabel htmlFor="memo">
-              メモ
-            </ItemLabel>
+            <ItemLabel htmlFor="memo">メモ</ItemLabel>
             <TextareaAutosize
               className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
               name="memo"
@@ -313,8 +390,19 @@ const AddReportModal = ({
         </DivisionContainer>
 
         <div className="flex justify-around mt-10 mb-5">
-          <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
-          <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
+          <Button
+            className={"w-32"}
+            type={"button"}
+            title={"キャンセル"}
+            onClick={closeModal}
+          />
+          <Button
+            loading={loading}
+            className={"w-32"}
+            type={"submit"}
+            title={"登録"}
+            use={"accent"}
+          />
         </div>
       </ModalContainer>
     </Modal>

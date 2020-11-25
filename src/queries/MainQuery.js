@@ -14,6 +14,7 @@ export const VIEW_DOG = gql`
         username
         avatar
         email
+        token
       }
       lostDogThreads {
         id
@@ -76,7 +77,7 @@ export const CREATE_THREAD = gql`
       age: $age
       gender: $gender
       size: $size
-      weight: $weight 
+      weight: $weight
       feature: $feature
       images: $images
       lostWhen: $lostWhen
@@ -136,7 +137,7 @@ export const MODIFY_THREAD = gql`
       age: $age
       gender: $gender
       size: $size
-      weight: $weight 
+      weight: $weight
       feature: $feature
       images: $images
       lostWhen: $lostWhen
@@ -173,14 +174,8 @@ export const MODIFY_THREAD = gql`
 `;
 
 export const CLOSE_THREAD = gql`
-  mutation closeThread(
-    $threadId: String!
-    $dogId: String!
-  ) {
-    closeThread(
-      threadId: $threadId
-      dogId: $dogId
-    ) {
+  mutation closeThread($threadId: String!, $dogId: String!) {
+    closeThread(threadId: $threadId, dogId: $dogId) {
       id
       dog {
         id

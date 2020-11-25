@@ -25,11 +25,11 @@ const ModalContainer = styled.form`
 `;
 
 const InfoTitle = styled.div`
-    ${tw`text-center pl-3 font-bold text-gray-700 text-base py-4 md:py-2 bg-secondary-light relative`}
+  ${tw`text-center pl-3 font-bold text-gray-700 text-base py-4 md:py-2 bg-secondary-light relative`}
 `;
 
 const ImageContainer = styled.div`
-    ${tw``}
+  ${tw``}
 `;
 
 const Image = styled.div`
@@ -38,55 +38,50 @@ const Image = styled.div`
 `;
 
 const Divide = styled.hr`
-    ${tw`w-full my-3`}
+  ${tw`w-full my-3`}
 `;
 
 const LostInfo = styled.p`
-    ${tw`text-center mb-3`}
+  ${tw`text-center mb-3`}
 `;
 
 const DogInfoRow = styled.div`
-    ${tw`md:flex p-1`}
+  ${tw`md:flex p-1`}
 `;
 
 const DogInfoItem = styled.div`
-    ${tw`md:w-full`}
+  ${tw`md:w-full`}
 `;
 
 const DogInfoItemHeader = styled.span`
-    ${tw``}
+  ${tw``}
 `;
 
 const DogInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-sm`}
+  ${tw`text-blue-700 font-semibold text-sm`}
 `;
 
 const OwnerInfoRow = styled.div`
-    ${tw`md:flex p-1`}
+  ${tw`md:flex p-1`}
 `;
 
 const OwnerInfoItem = styled.div`
-    ${tw`md:w-full`}
+  ${tw`md:w-full`}
 `;
 
 const OwnerInfoItemHeader = styled.span`
-    ${tw`text-sm`}
+  ${tw`text-sm`}
 `;
 
 const OwnerInfoItemContent = styled.span`
-    ${tw`text-blue-700 font-semibold text-sm`}
+  ${tw`text-blue-700 font-semibold text-sm`}
 `;
 
 const Footer = styled.p`
-    ${tw`bg-secondary-light text-sm text-center py-1 mt-2`}
+  ${tw`bg-secondary-light text-sm text-center py-1 mt-2`}
 `;
 
-const PosterModal = ({
-  dogImg,
-  thread,
-  modalIsOpen,
-  closeModal
-}) => {
+const PosterModal = ({ dogImg, thread, modalIsOpen, closeModal }) => {
   const { lock, unlock } = useScrollBodyLock();
 
   const [subValue, setSubValue] = useState(0);
@@ -112,86 +107,102 @@ const PosterModal = ({
         </CloseButton>
       </ModalTitle>
       <ModalContainer>
-      <div className="border-4 border-secondary-light rounded-lg">
-            <InfoTitle>
-                犬を探しています
-            </InfoTitle>
-            <ImageContainer>
-                <Carousel value={subValue} onChange={onChangeSub}>
-                    {thread.images.length > 0 ? (
-                        thread.images.map((image) => <Image key={image.id} url={image.url} />)
-                    ) : (
-                        <Image url={dogImg} />
-                    )}
-                </Carousel>
-                <Dots value={subValue} onChange={onChangeSub} number={thread.images.length || 1} />
-            </ImageContainer>
+        <div className="border-4 border-secondary-light rounded-lg">
+          <InfoTitle>犬を探しています</InfoTitle>
+          <ImageContainer>
+            <Carousel value={subValue} onChange={onChangeSub}>
+              {thread.images.length > 0 ? (
+                thread.images.map((image) => (
+                  <Image key={image.id} url={image.url} />
+                ))
+              ) : (
+                <Image url={dogImg} />
+              )}
+            </Carousel>
+            <Dots
+              value={subValue}
+              onChange={onChangeSub}
+              number={thread.images.length || 1}
+            />
+          </ImageContainer>
 
-            <LostInfo>
-                <span className="font-semibold mr-2">{ moment(thread.lostWhen).format("ll") }</span>
-                <span className="font-semibold text-blue-700 mr-2">{ thread.lostWhere }</span>
-                <span>付近で行方不明</span>
-            </LostInfo>
+          <LostInfo>
+            <span className="font-semibold mr-2">
+              {moment(thread.lostWhen).format("ll")}
+            </span>
+            <span className="font-semibold text-blue-700 mr-2">
+              {thread.lostWhere}
+            </span>
+            <span>付近で行方不明</span>
+          </LostInfo>
 
-            <Divide />
+          <Divide />
 
-            <DogInfoRow>
-                <DogInfoItem>
-                    <DogInfoItemHeader>名前: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.name}</DogInfoItemContent>
-                </DogInfoItem>
-                <DogInfoItem>
-                    <DogInfoItemHeader>犬種: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.breed}</DogInfoItemContent>
-                </DogInfoItem>
-            </DogInfoRow>
-            <DogInfoRow>
-                <DogInfoItem>
-                    <DogInfoItemHeader>性別: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.gender === "male" ? "男" : "女"}</DogInfoItemContent>
-                </DogInfoItem>
-                <DogInfoItem>
-                    <DogInfoItemHeader>年齢: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.age}歳</DogInfoItemContent>
-                </DogInfoItem>
-            </DogInfoRow>
-            <DogInfoRow>
-                <DogInfoItem>
-                    <DogInfoItemHeader>サイズ: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.size === "small" ? "小型" : thread.size === "medium" ? "中型" : "大型"}</DogInfoItemContent>
-                </DogInfoItem>
-                <DogInfoItem>
-                    <DogInfoItemHeader>体重: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.weight} kg</DogInfoItemContent>
-                </DogInfoItem>
-            </DogInfoRow>
-            <DogInfoRow>
-                <DogInfoItem>
-                    <DogInfoItemHeader>特徴: </DogInfoItemHeader>
-                    <DogInfoItemContent>{thread.feature}</DogInfoItemContent>
-                </DogInfoItem>
-            </DogInfoRow>
+          <DogInfoRow>
+            <DogInfoItem>
+              <DogInfoItemHeader>名前: </DogInfoItemHeader>
+              <DogInfoItemContent>{thread.name}</DogInfoItemContent>
+            </DogInfoItem>
+            <DogInfoItem>
+              <DogInfoItemHeader>犬種: </DogInfoItemHeader>
+              <DogInfoItemContent>{thread.breed}</DogInfoItemContent>
+            </DogInfoItem>
+          </DogInfoRow>
+          <DogInfoRow>
+            <DogInfoItem>
+              <DogInfoItemHeader>性別: </DogInfoItemHeader>
+              <DogInfoItemContent>
+                {thread.gender === "male" ? "男" : "女"}
+              </DogInfoItemContent>
+            </DogInfoItem>
+            <DogInfoItem>
+              <DogInfoItemHeader>年齢: </DogInfoItemHeader>
+              <DogInfoItemContent>{thread.age}歳</DogInfoItemContent>
+            </DogInfoItem>
+          </DogInfoRow>
+          <DogInfoRow>
+            <DogInfoItem>
+              <DogInfoItemHeader>サイズ: </DogInfoItemHeader>
+              <DogInfoItemContent>
+                {thread.size === "small"
+                  ? "小型"
+                  : thread.size === "medium"
+                  ? "中型"
+                  : "大型"}
+              </DogInfoItemContent>
+            </DogInfoItem>
+            <DogInfoItem>
+              <DogInfoItemHeader>体重: </DogInfoItemHeader>
+              <DogInfoItemContent>{thread.weight} kg</DogInfoItemContent>
+            </DogInfoItem>
+          </DogInfoRow>
+          <DogInfoRow>
+            <DogInfoItem>
+              <DogInfoItemHeader>特徴: </DogInfoItemHeader>
+              <DogInfoItemContent>{thread.feature}</DogInfoItemContent>
+            </DogInfoItem>
+          </DogInfoRow>
 
-            <Divide />
+          <Divide />
 
-            <OwnerInfoRow>
-                <OwnerInfoItem>
-                    <OwnerInfoItemHeader>飼い主名: </OwnerInfoItemHeader>
-                    <OwnerInfoItemContent>{thread.owner}</OwnerInfoItemContent>
-                </OwnerInfoItem>
-                <OwnerInfoItem>
-                    <OwnerInfoItemHeader>連絡先: </OwnerInfoItemHeader>
-                    <OwnerInfoItemContent>{thread.phone}</OwnerInfoItemContent>
-                </OwnerInfoItem>
-            </OwnerInfoRow>
-            <OwnerInfoRow>
-                <OwnerInfoItem>
-                    <OwnerInfoItemHeader>メールアドレス: </OwnerInfoItemHeader>
-                    <OwnerInfoItemContent>{thread.email}</OwnerInfoItemContent>
-                </OwnerInfoItem>
-            </OwnerInfoRow>
+          <OwnerInfoRow>
+            <OwnerInfoItem>
+              <OwnerInfoItemHeader>飼い主名: </OwnerInfoItemHeader>
+              <OwnerInfoItemContent>{thread.owner}</OwnerInfoItemContent>
+            </OwnerInfoItem>
+            <OwnerInfoItem>
+              <OwnerInfoItemHeader>連絡先: </OwnerInfoItemHeader>
+              <OwnerInfoItemContent>{thread.phone}</OwnerInfoItemContent>
+            </OwnerInfoItem>
+          </OwnerInfoRow>
+          <OwnerInfoRow>
+            <OwnerInfoItem>
+              <OwnerInfoItemHeader>メールアドレス: </OwnerInfoItemHeader>
+              <OwnerInfoItemContent>{thread.email}</OwnerInfoItemContent>
+            </OwnerInfoItem>
+          </OwnerInfoRow>
 
-            <Footer>見つけた方はレポートしてください！</Footer>
+          <Footer>見つけた方はレポートしてください！</Footer>
         </div>
       </ModalContainer>
     </Modal>

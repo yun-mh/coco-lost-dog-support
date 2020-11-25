@@ -5,20 +5,22 @@ import { VIEW_DOG } from "../../queries/MainQuery";
 import DogPresenter from "./DogPresenter";
 
 const DogContainer = ({ location }) => {
-    const { dogId } = useParams();
+  const { dogId } = useParams();
 
-    const [user, setUser] = useState("");
+  const [user, setUser] = useState("");
 
-    const { loading, data } = useQuery(VIEW_DOG, { variables: { id: dogId } });
-    
-    useEffect(() => {
-        if (data !== undefined && location.search !== "") {
-            const userId = location.search.split("?owner=")[1];
-            data.viewDog.user.id === userId ? setUser(userId) : setUser("");
-        }
-    }, [location, data]);
+  const { loading, data } = useQuery(VIEW_DOG, { variables: { id: dogId } });
 
-    return <DogPresenter dogId={dogId} user={user} loading={loading} data={data} />
-}
+  useEffect(() => {
+    if (data !== undefined && location.search !== "") {
+      const userId = location.search.split("?owner=")[1];
+      data.viewDog.user.id === userId ? setUser(userId) : setUser("");
+    }
+  }, [location, data]);
+
+  return (
+    <DogPresenter dogId={dogId} user={user} loading={loading} data={data} />
+  );
+};
 
 export default withRouter(DogContainer);

@@ -17,8 +17,12 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
 
   useEffect(() => {
     if (data !== undefined) {
-      const { viewDog: { lostDogThreads } } = data;
-      const sorted = lostDogThreads.concat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const {
+        viewDog: { lostDogThreads },
+      } = data;
+      const sorted = lostDogThreads
+        .concat()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setSortedThread([...sorted]);
     }
   }, [data]);
@@ -112,21 +116,26 @@ const DogPresenter = ({ dogId, user, loading, data }) => {
                     迷子状態ではありません。
                   </span>
                 </div>
+              ) : data.viewDog.lostDogThreads.length > 0 ? (
+                sortedThread.map((thread) => (
+                  <div key={thread.id} className="w-full my-4">
+                    <Collapse
+                      user={user}
+                      token={data?.viewDog?.user?.token}
+                      dogId={dogId}
+                      thread={thread}
+                      dogImg={data.viewDog.image}
+                    />
+                  </div>
+                ))
               ) : (
-                data.viewDog.lostDogThreads.length > 0 ? sortedThread.map(thread => (
-                    <div key={thread.id} className="w-full my-4">
-                      <Collapse user={user} dogId={dogId} thread={thread} dogImg={data.viewDog.image} />
-                    </div>
-                  )) : (
-                    <div className="h-64 flex items-center justify-center">
-                      <Meh size={40} className="text-primary mr-3" />
-                      <span className="text-xl text-gray-500">
-                        迷子情報を登録してください。
-                      </span>
-                    </div>
-                  )
-                )
-              }
+                <div className="h-64 flex items-center justify-center">
+                  <Meh size={40} className="text-primary mr-3" />
+                  <span className="text-xl text-gray-500">
+                    迷子情報を登録してください。
+                  </span>
+                </div>
+              )}
             </div>
           </>
         ) : (
