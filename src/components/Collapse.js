@@ -106,6 +106,7 @@ const Collapse = ({ user, thread, dogId, dogImg }) => {
             <CollapseTitleContainer>
                 <CollapseTitle onClick={toggleOpen} type="button">
                     { moment(thread.createdAt).format('lll') }に登録した迷子情報
+                    { thread.isClosed ? "(終了)" : "(進行中)" }
                 </CollapseTitle>
                 { !thread.isClosed && (
                     <div className="hidden md:block">

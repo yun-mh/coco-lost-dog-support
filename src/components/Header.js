@@ -103,7 +103,7 @@ const Header = ({ user, loading, data }) => {
             {!loading && data && (
               <button
                 onClick={toggleOpen}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-primary-light focus:outline-none transition duration-150 ease-in-out"
               >
                 {!isOpen ? <Info /> : <X />}
               </button>
@@ -121,7 +121,7 @@ const Header = ({ user, loading, data }) => {
             </TitleContainer>
           </Title>
 
-          {user && user !== "" && (
+          {user && user !== "" && data?.viewDog?.isMissed && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <div className="flex hidden md:block">
                 <button onClick={openCreateModal} className="shadow px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-red-500 focus:outline-none focus:text-white hover:bg-red-300 transition duration-150 ease-in-out">
