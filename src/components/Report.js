@@ -31,7 +31,7 @@ const ReportFooter = styled.div`
   ${tw`text-xs md:text-sm leading-snug tracking-wide text-gray-600 text-opacity-100 text-right mt-2`}
 `;
 
-const Report = ({ report, token, dogId }) => {
+const Report = ({ report, token, dogId, user }) => {
   const [lat, setLat] = useState(35.6803997);
   const [lng, setLng] = useState(139.4606805);
   const [modifyReportModalIsOpen, setModifyReportOpen] = useState(false);
@@ -132,6 +132,7 @@ const Report = ({ report, token, dogId }) => {
         data={report}
         token={token}
         dogId={dogId}
+        user={user}
         modalIsOpen={modifyReportModalIsOpen}
         closeModal={closeRModifyModal}
       />

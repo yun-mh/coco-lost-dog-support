@@ -37,7 +37,7 @@ const InitialReportFooter = styled.div`
   ${tw`text-xs md:text-sm leading-snug tracking-wide text-gray-600 text-opacity-100 text-right`}
 `;
 
-const Timeline = ({ token, thread, dogId }) => {
+const Timeline = ({ token, thread, dogId, user }) => {
   return (
     <ReportContainer>
       <ReportHeader>タイムライン</ReportHeader>
@@ -66,6 +66,7 @@ const Timeline = ({ token, thread, dogId }) => {
               token={token}
               report={report}
               dogId={dogId}
+              user={user}
             />
           ))}
       </TimelineContainer>

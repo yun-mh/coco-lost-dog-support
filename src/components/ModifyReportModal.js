@@ -267,7 +267,14 @@ const Content = ({
   );
 };
 
-const ModifyReportModal = ({ data, token, dogId, modalIsOpen, closeModal }) => {
+const ModifyReportModal = ({
+  data,
+  token,
+  dogId,
+  user,
+  modalIsOpen,
+  closeModal,
+}) => {
   const { lock, unlock } = useScrollBodyLock();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pwd, setPwd] = useState("");
@@ -324,6 +331,8 @@ const ModifyReportModal = ({ data, token, dogId, modalIsOpen, closeModal }) => {
             phone: reportFormik.values.phone,
             memo: reportFormik.values.memo,
             token,
+            dogId,
+            user,
           },
           refetchQueries: () => [{ query: VIEW_DOG, variables: { id: dogId } }],
         });

@@ -61,6 +61,7 @@ const Divide = styled.hr`
 
 const AddReportModal = ({
   dogId,
+  user,
   token,
   threadId,
   modalIsOpen,
@@ -125,6 +126,8 @@ const AddReportModal = ({
             phone: reportFormik.values.phone,
             memo: reportFormik.values.memo,
             token,
+            dogId,
+            user,
           },
           refetchQueries: () => [{ query: VIEW_DOG, variables: { id: dogId } }],
         });
