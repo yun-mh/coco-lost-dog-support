@@ -362,6 +362,7 @@ const ModifyReportModal = ({
       memo: data.memo,
     },
     validate,
+    validateOnChange: false,
     onSubmit,
   });
 

@@ -5,7 +5,7 @@ import { X } from "react-feather";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import ImageUploading from 'react-images-uploading';
+import ImageUploading from "react-images-uploading";
 import TextareaAutosize from "react-autosize-textarea";
 import axios from "axios";
 import { useScrollBodyLock } from "../hooks/useScrollBodyLock";
@@ -55,12 +55,7 @@ const Divide = styled.hr`
   ${tw`w-full mt-8 mb-6`}
 `;
 
-const ModifyThreadModal = ({
-  data,
-  dogId,
-  modalIsOpen,
-  closeModal,
-}) => {
+const ModifyThreadModal = ({ data, dogId, modalIsOpen, closeModal }) => {
   const { lock, unlock } = useScrollBodyLock();
 
   const [lostWhen, setLostWhen] = useState(data.lostWhen);
@@ -95,10 +90,19 @@ const ModifyThreadModal = ({
   };
 
   const onSubmit = async () => {
-    if (formik.values.name !== "" && formik.values.breed !== "" && formik.values.age !== "" && formik.values.lostWhere !== "" && formik.values.owner !== "" && formik.values.phone !== "" && formik.values.gender !== "") {
+    if (
+      formik.values.name !== "" &&
+      formik.values.breed !== "" &&
+      formik.values.age !== "" &&
+      formik.values.lostWhere !== "" &&
+      formik.values.owner !== "" &&
+      formik.values.phone !== "" &&
+      formik.values.gender !== ""
+    ) {
       setLoading(true);
 
-      let imageLocations, defaultImages = [];
+      let imageLocations,
+        defaultImages = [];
       if (images.length > 0) {
         const formData = new FormData();
         for (let image of images) {
@@ -109,7 +113,7 @@ const ModifyThreadModal = ({
           }
         }
         const {
-          data: { locations }
+          data: { locations },
         } = await axios.post(
           "https://api-coco.herokuapp.com/api/upload",
           formData,
@@ -134,23 +138,23 @@ const ModifyThreadModal = ({
             size: formik.values.size,
             weight: formik.values.weight,
             feature: formik.values.feature,
-            images: imageLocations ? [...defaultImages, ...imageLocations] : [...defaultImages],
+            images: imageLocations
+              ? [...defaultImages, ...imageLocations]
+              : [...defaultImages],
             lostWhen: formik.values.lostWhen,
             lostWhere: formik.values.lostWhere,
             owner: formik.values.owner,
             phone: formik.values.phone,
             email: formik.values.email,
           },
-          refetchQueries: () => [
-            { query: VIEW_DOG, variables: { id: dogId } },
-          ], 
+          refetchQueries: () => [{ query: VIEW_DOG, variables: { id: dogId } }],
         });
         if (modifyThread) {
           closeModal();
           toast.success("🙂 迷子情報の編集を完了しました！");
         }
-      } catch(e) {
-        console.log(e)
+      } catch (e) {
+        console.log(e);
         toast.error(`😢 ${e.message}`);
       } finally {
         setLoading(false);
@@ -174,6 +178,7 @@ const ModifyThreadModal = ({
       email: "",
     },
     validate,
+    validateOnChange: false,
     onSubmit,
   });
 
@@ -191,7 +196,7 @@ const ModifyThreadModal = ({
       formik.values.phone = data.phone;
       formik.values.email = data.email;
     }
-  }, [data, formik.values])
+  }, []);
 
   const onChange = (imageList, addUpdateIndex) => {
     setImages(imageList);
@@ -199,7 +204,7 @@ const ModifyThreadModal = ({
 
   useEffect(() => {
     formik.values.lostWhen = lostWhen;
-  }, [lostWhen, formik.values])
+  }, [lostWhen, formik.values]);
 
   return (
     <Modal
@@ -218,33 +223,61 @@ const ModifyThreadModal = ({
         </CloseButton>
       </ModalTitle>
       <ModalContainer onSubmit={formik.handleSubmit}>
-        <Directions><span className="text-red-500">*</span>がついている項目は記入必須です。</Directions>
+        <Directions>
+          <span className="text-red-500">*</span>
+          がついている項目は記入必須です。
+        </Directions>
 
-        <DivisionTitle>犬情報</DivisionTitle>  
+        <DivisionTitle>犬情報</DivisionTitle>
         <DivisionContainer>
           <DivisionItem>
             <ItemLabel htmlFor="name">
               犬名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）ココ" type="text" name="name" errors={formik.errors.name} onChange={formik.handleChange} value={formik.values.name} />
+            <Field
+              placeholder="例）ココ"
+              type="text"
+              name="name"
+              errors={formik.errors.name}
+              onChange={formik.handleChange}
+              value={formik.values.name}
+            />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel htmlFor="breed">
               犬種(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）プードル" type="text" name="breed" errors={formik.errors.breed} onChange={formik.handleChange} value={formik.values.breed} />
+            <Field
+              placeholder="例）プードル"
+              type="text"
+              name="breed"
+              errors={formik.errors.breed}
+              onChange={formik.handleChange}
+              value={formik.values.breed}
+            />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel htmlFor="gender">
               性別(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div className="relative">
-              <select value={formik.values.gender} onChange={formik.handleChange} name="gender" className="block appearance-none w-full bg-gray-100 border py-3 px-4 pr-8 rounded">
+              <select
+                value={formik.values.gender}
+                onChange={formik.handleChange}
+                name="gender"
+                className="block appearance-none w-full bg-gray-100 border py-3 px-4 pr-8 rounded"
+              >
                 <option value="male">男</option>
                 <option value="female">女</option>
               </select>
               <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
               </div>
             </div>
           </DivisionItem>
@@ -255,36 +288,58 @@ const ModifyThreadModal = ({
             <ItemLabel htmlFor="age">
               年齢(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field type="number" min="0" name="age" errors={formik.errors.age} onChange={formik.handleChange} value={formik.values.age} />
+            <Field
+              type="number"
+              min="0"
+              name="age"
+              errors={formik.errors.age}
+              onChange={formik.handleChange}
+              value={formik.values.age}
+            />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel htmlFor="size">
               大きさ(<span className="text-red-500">*</span>)
             </ItemLabel>
             <div className="relative">
-              <select value={formik.values.size} onChange={formik.handleChange} name="size" className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded">
+              <select
+                value={formik.values.size}
+                onChange={formik.handleChange}
+                name="size"
+                className="block appearance-none w-full bg-gray-100 border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded"
+              >
                 <option value="small">小型</option>
                 <option value="medium">中型</option>
                 <option value="big">大型</option>
               </select>
               <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-grey-darker">
-                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
               </div>
             </div>
           </DivisionItem>
           <DivisionItem>
-            <ItemLabel htmlFor="weight">
-              体重(kg)
-            </ItemLabel>
-            <Field type="number" min="0" step="0.5" name="weight" errors={formik.errors.weight} onChange={formik.handleChange} value={formik.values.weight} />
+            <ItemLabel htmlFor="weight">体重(kg)</ItemLabel>
+            <Field
+              type="number"
+              min="0"
+              step="0.5"
+              name="weight"
+              errors={formik.errors.weight}
+              onChange={formik.handleChange}
+              value={formik.values.weight}
+            />
           </DivisionItem>
         </DivisionContainer>
 
         <DivisionContainer>
           <DivisionItem>
-            <ItemLabel htmlFor="feature">
-              特徴
-            </ItemLabel>
+            <ItemLabel htmlFor="feature">特徴</ItemLabel>
             <TextareaAutosize
               className="appearance-none block w-full bg-gray-100 text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
               name="feature"
@@ -306,7 +361,7 @@ const ModifyThreadModal = ({
               value={images}
               onChange={onChange}
               maxNumber={5}
-              acceptType={['jpg', 'png']}
+              acceptType={["jpg", "png"]}
               dataURLKey="data_url"
             >
               {({
@@ -314,25 +369,51 @@ const ModifyThreadModal = ({
                 onImageUpload,
                 onImageRemoveAll,
                 onImageRemove,
-                errors
+                errors,
               }) => (
                 <>
                   <div className="w-full md:flex">
-                    <Button type="button" className="md:w-1/2 md:mr-3" use={"accent"} title="画像を選択" onClick={onImageUpload} />
-                    <Button type="button" className="md:w-1/2" title="クリア" onClick={onImageRemoveAll} />
+                    <Button
+                      type="button"
+                      className="md:w-1/2 md:mr-3"
+                      use={"accent"}
+                      title="画像を選択"
+                      onClick={onImageUpload}
+                    />
+                    <Button
+                      type="button"
+                      className="md:w-1/2"
+                      title="クリア"
+                      onClick={onImageRemoveAll}
+                    />
                   </div>
                   <div className="text-red-500">
-                    {errors?.maxNumber && <span>イメージは最大５枚までアップロード可能です。</span>}
-                    {errors?.acceptType && <span>jpg・png形式のみアップロード可能です。</span>}
+                    {errors?.maxNumber && (
+                      <span>イメージは最大５枚までアップロード可能です。</span>
+                    )}
+                    {errors?.acceptType && (
+                      <span>jpg・png形式のみアップロード可能です。</span>
+                    )}
                   </div>
                   <div className="w-full flex flex-wrap justify-around items-center mt-8">
                     {imageList.map((image, index) => (
-                      <div key={index} className="flex flex-col relative mx-5 my-3">
+                      <div
+                        key={index}
+                        className="flex flex-col relative mx-5 my-3"
+                      >
                         <div className="bg-white p-2 border">
-                          <img src={image['data_url'] || image.url} alt="dogImage" width="150" />
+                          <img
+                            src={image["data_url"] || image.url}
+                            alt="dogImage"
+                            width="150"
+                          />
                         </div>
-                        <div>  
-                          <div className="cursor-pointer bg-red-400 hover:bg-red-500 text-white p-1 rounded-full flex items-center justify-center absolute top-0" style={{ right: -10, top: -10 }} onClick={() => onImageRemove(index)}>
+                        <div>
+                          <div
+                            className="cursor-pointer bg-red-400 hover:bg-red-500 text-white p-1 rounded-full flex items-center justify-center absolute top-0"
+                            style={{ right: -10, top: -10 }}
+                            onClick={() => onImageRemove(index)}
+                          >
                             <X size={16} />
                           </div>
                         </div>
@@ -353,13 +434,27 @@ const ModifyThreadModal = ({
             <ItemLabel htmlFor="lostWhen">
               迷子になった日時(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <DatePicker name="lostWhen" className="bg-gray-100" birthdate={lostWhen} setBirthdate={setLostWhen} open={isDateModalVisible} toggleOpen={setIsDateModalVisible} />
+            <DatePicker
+              name="lostWhen"
+              className="bg-gray-100"
+              birthdate={lostWhen}
+              setBirthdate={setLostWhen}
+              open={isDateModalVisible}
+              toggleOpen={setIsDateModalVisible}
+            />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel htmlFor="lostWhere">
               迷子になった場所(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）愛知県名古屋市中区正木１丁目" type="text" name="lostWhere" errors={formik.errors.lostWhere} onChange={formik.handleChange} value={formik.values.lostWhere} />
+            <Field
+              placeholder="例）愛知県名古屋市中区正木１丁目"
+              type="text"
+              name="lostWhere"
+              errors={formik.errors.lostWhere}
+              onChange={formik.handleChange}
+              value={formik.values.lostWhere}
+            />
           </DivisionItem>
         </DivisionContainer>
 
@@ -371,27 +466,56 @@ const ModifyThreadModal = ({
             <ItemLabel htmlFor="owner">
               飼い主名(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）犬山犬男" type="text" name="owner" errors={formik.errors.owner} onChange={formik.handleChange} value={formik.values.owner} />
+            <Field
+              placeholder="例）犬山犬男"
+              type="text"
+              name="owner"
+              errors={formik.errors.owner}
+              onChange={formik.handleChange}
+              value={formik.values.owner}
+            />
           </DivisionItem>
           <DivisionItem>
             <ItemLabel htmlFor="phone">
               連絡先(<span className="text-red-500">*</span>)
             </ItemLabel>
-            <Field placeholder="例）070-1234-5678" type="text" name="phone" errors={formik.errors.phone} onChange={formik.handleChange} value={formik.values.phone} />
+            <Field
+              placeholder="例）070-1234-5678"
+              type="text"
+              name="phone"
+              errors={formik.errors.phone}
+              onChange={formik.handleChange}
+              value={formik.values.phone}
+            />
           </DivisionItem>
           <DivisionItem className="md:w-1/3 px-3">
-            <ItemLabel htmlFor="email">
-              メールアドレス
-            </ItemLabel>
-            <Field placeholder="例）inuski@yahoo.co.jp" type="email" name="email" errors={formik.errors.email} onChange={formik.handleChange} value={formik.values.email} />
+            <ItemLabel htmlFor="email">メールアドレス</ItemLabel>
+            <Field
+              placeholder="例）inuski@yahoo.co.jp"
+              type="email"
+              name="email"
+              errors={formik.errors.email}
+              onChange={formik.handleChange}
+              value={formik.values.email}
+            />
           </DivisionItem>
         </DivisionContainer>
 
         <div className="flex justify-around mt-10 mb-5">
-          <Button className={"w-32"} type={"button"} title={"キャンセル"} onClick={closeModal} />
-          <Button loading={loading} className={"w-32"} type={"submit"} title={"登録"} use={"accent"} />
+          <Button
+            className={"w-32"}
+            type={"button"}
+            title={"キャンセル"}
+            onClick={closeModal}
+          />
+          <Button
+            loading={loading}
+            className={"w-32"}
+            type={"submit"}
+            title={"登録"}
+            use={"accent"}
+          />
         </div>
-
       </ModalContainer>
     </Modal>
   );

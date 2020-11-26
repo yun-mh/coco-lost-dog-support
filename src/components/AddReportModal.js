@@ -165,6 +165,7 @@ const AddReportModal = ({
       memo: "",
     },
     validate,
+    validateOnChange: false,
     onSubmit,
   });
 
