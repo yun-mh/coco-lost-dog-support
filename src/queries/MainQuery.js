@@ -214,6 +214,8 @@ export const ADD_REPORT = gql`
     $phone: String!
     $memo: String
     $token: String
+    $dogId: String
+    $user: String
   ) {
     addReport(
       threadId: $threadId
@@ -225,6 +227,8 @@ export const ADD_REPORT = gql`
       phone: $phone
       memo: $memo
       token: $token
+      dogId: $dogId
+      user: $user
     ) {
       id
       thread {
@@ -252,6 +256,8 @@ export const MODIFY_REPORT = gql`
     $phone: String!
     $memo: String
     $token: String
+    $dogId: String
+    $user: String
   ) {
     modifyReport(
       reportId: $reportId
@@ -262,6 +268,8 @@ export const MODIFY_REPORT = gql`
       phone: $phone
       memo: $memo
       token: $token
+      dogId: $dogId
+      user: $user
     ) {
       id
       thread {
