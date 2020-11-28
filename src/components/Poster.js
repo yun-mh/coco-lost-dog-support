@@ -4,8 +4,6 @@ import tw from "twin.macro";
 import moment from "moment";
 import Carousel, { Dots } from "@brainhubeu/react-carousel";
 import "@brainhubeu/react-carousel/lib/style.css";
-import Button from "./Button";
-import ModifyThreadModal from "./ModifyThreadModal";
 
 const InfoTitle = styled.div`
   ${tw`md:text-center font-bold text-gray-700 text-base md:text-3xl py-4 md:py-2 bg-secondary-light relative`}
@@ -64,17 +62,8 @@ const Footer = styled.p`
   ${tw`bg-secondary-light text-base md:text-lg text-center py-1 mt-2`}
 `;
 
-const Poster = ({ user, dogId, dogImg, thread }) => {
+const Poster = ({ dogId, dogImg, thread }) => {
   const [subValue, setSubValue] = useState(0);
-  const [modifyThreadModalIsOpen, setModifyThreadOpen] = useState(false);
-
-  const openModifyModal = () => {
-    setModifyThreadOpen(true);
-  };
-
-  const closeModifyModal = () => {
-    setModifyThreadOpen(false);
-  };
 
   const onChangeSub = (subValue) => {
     setSubValue(subValue);
@@ -82,14 +71,7 @@ const Poster = ({ user, dogId, dogImg, thread }) => {
 
   return (
     <div className="border-4 border-secondary-light rounded-lg">
-      <InfoTitle>
-        犬を探しています
-        {!thread.isClosed && user !== "" && (
-          <div className="text-base absolute top-0 right-0 hidden sm:block">
-            <Button use="accent" title="修正" onClick={openModifyModal} />
-          </div>
-        )}
-      </InfoTitle>
+      <InfoTitle>犬を探しています</InfoTitle>
       <ImageContainer>
         <Carousel value={subValue} onChange={onChangeSub}>
           {thread.images.length > 0 ? (
@@ -184,13 +166,6 @@ const Poster = ({ user, dogId, dogImg, thread }) => {
       </OwnerInfoRow>
 
       <Footer>見つけた方はレポートしてください！</Footer>
-
-      <ModifyThreadModal
-        data={thread}
-        dogId={dogId}
-        modalIsOpen={modifyThreadModalIsOpen}
-        closeModal={closeModifyModal}
-      />
     </div>
   );
 };

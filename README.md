@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# ココ迷子サポート
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+「ココ迷子サポート」は犬のための SNS「ココ」のサブシステムで、迷子になった犬を探している飼い主をサポートすることを目的としています。\
+このレポジトリーはココ迷子サポートシステムのフロントエンドで、React・tailwindcss を利用して開発されました。
 
-## Available Scripts
+## 画面例
 
-In the project directory, you can run:
+| <img src="https://coco-for-dogs.s3-ap-northeast-1.amazonaws.com/readme/support_main.png" alt="drawing" width="300"/> | <img src="https://coco-for-dogs.s3-ap-northeast-1.amazonaws.com/readme/support_modal.png" alt="drawing" width="300"/> |
+| :------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------: |
+|                                                        メイン                                                        |                                                      モーダル例                                                       |
 
-### `yarn start`
+## 機能
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+ココ迷子サポートでは、以下のような機能が利用できます。
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 迷子情報登録
 
-### `yarn test`
+迷子になった犬の迷子情報スレットを登録します。\
+犬の写真・基本情報・迷子になった場所・日時など、犬を見つけるために役に立つ情報を載せることが可能です。\
+迷子情報を登録するには、「ココ」の WEB サイトまたはアプリケーションから本システムへのアクセスが必要です。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 迷子情報修正
 
-### `yarn build`
+登録した迷子情報スレッドの内容を修正します。\
+登録と同じように、「ココ」の WEB サイトまたはアプリケーションから本システムへのアクセスが必要です。
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 帰還完了設定
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+犬がちゃんと家に帰ったら帰還完了を設定することで迷子情報のスレッドをクローズします。\
+一回クローズされたスレッドの詳細情報は非公開になります。\
+登録と同じように、「ココ」の WEB サイトまたはアプリケーションから本システムへのアクセスが必要です。
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### レポート登録
 
-### `yarn eject`
+迷子犬を見つけた方が犬の発見場所・発見日時・連絡先などの情報を投稿します。\
+犬の首輪やハーネスに付着されている QR コードを読み込むことで本システムにアクセスできます。\
+飼い主がココモバイルアプリケーションを利用していれば、新しいレポートが登録されるたびにプッシュ通知をもらうことができます。
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### レポート修正
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+投稿したレポートを修正します。\
+レポートを登録する際に設定したパスワードで、レポート投稿者のみアクセスできます。
+ココモバイルアプリケーションを利用している飼い主は、レポート修正が行われるたびにもプッシュ通知がもらえます。

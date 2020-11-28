@@ -129,7 +129,7 @@ const Collapse = ({ user, token, thread, dogId, dogImg }) => {
           className={isOpen ? "border border-b-0 px-10 py-6 flex" : "hidden"}
         >
           <InitialInfoContainer>
-            <Poster user={user} dogId={dogId} dogImg={dogImg} thread={thread} />
+            <Poster dogId={dogId} dogImg={dogImg} thread={thread} />
           </InitialInfoContainer>
           <ReportInfoContainer>
             <div className="mb-2 lg:hidden">
@@ -153,6 +153,28 @@ const Collapse = ({ user, token, thread, dogId, dogImg }) => {
                 <Button use="other" title="帰還完了設定" onClick={cameBack} />
               </div>
             )}
+            <div className="hidden lg:block">
+              <div className="flex justify-around">
+                {!thread.isClosed && user !== "" && (
+                  <div className="mb-2">
+                    <Button
+                      use="modify"
+                      title="迷子情報修正"
+                      onClick={openModifyModal}
+                    />
+                  </div>
+                )}
+                {!thread.isClosed && user !== "" && (
+                  <div className="mb-2">
+                    <Button
+                      use="other"
+                      title="帰還完了設定"
+                      onClick={cameBack}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
             <ReportsContainer>
               <Timeline
                 token={token}
