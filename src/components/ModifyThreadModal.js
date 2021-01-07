@@ -196,6 +196,7 @@ const ModifyThreadModal = ({ data, dogId, modalIsOpen, closeModal }) => {
       formik.values.phone = data.phone;
       formik.values.email = data.email;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onChange = (imageList, addUpdateIndex) => {
