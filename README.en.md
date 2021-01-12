@@ -4,6 +4,8 @@
 
 Read this in other languages: [日本語](./README.md), [English](./README.en.md), [한국어](./README.ko.md)
 
+<em>※ This system is a subsystem of Coco application, so you can access through Web or Mobile version of Coco application.</em>
+
 ## Technologies
 
 This project is created with:

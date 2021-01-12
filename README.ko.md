@@ -4,6 +4,8 @@
 
 Read this in other languages: [日本語](./README.md), [English](./README.en.md), [한국어](./README.ko.md)
 
+<em>※ 이 시스템은 코코 어플리케이션의 서브 시스템으로, 코코 Web 혹은 모바일 어플리케이션을 통해 접근하실 수 있습니다.</em>
+
 ## 사용 기술
 
 프로젝트에 활용한 주요 기술은 다음과 같습니다.

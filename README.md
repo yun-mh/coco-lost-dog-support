@@ -4,6 +4,8 @@
 
 Read this in other languages: [日本語](./README.md), [English](./README.en.md), [한국어](./README.ko.md)
 
+<em>※ このシステムはココアプリケーションのサブシステムで、ココ Web またはモバイルアプリケーションよりアクセス可能です。</em>
+
 ## 使用技術
 
 このプロジェクトで使った主な技術は以下のどおりです。
