@@ -18,7 +18,11 @@ import MapComponent from "./MapComponent";
 Modal.setAppElement("#root");
 
 const ModalTitle = styled.div`
-  ${tw`fixed w-3/4 sm:w-1/2 flex items-center justify-center h-12 border-b font-semibold bg-white rounded-t-lg`}
+  ${tw`fixed w-3/4 sm:w-1/2 h-12 border-b font-semibold bg-white rounded-t-lg`}
+`;
+
+const TitleContainer = styled.div`
+  ${tw`w-full h-full relative flex items-center justify-center rounded-t-lg`}
 `;
 
 const CloseButton = styled.div`
@@ -227,10 +231,12 @@ const AddReportModal = ({
       overlayClassName="Overlay flex justify-center items-center"
     >
       <ModalTitle>
-        レポート追加
-        <CloseButton onClick={() => closeModal()}>
-          <X size={30} className="text-gray-600 cursor-pointer" />
-        </CloseButton>
+        <TitleContainer>
+          <span>レポート追加</span>
+          <CloseButton onClick={() => closeModal()}>
+            <X size={30} className="text-gray-600 cursor-pointer" />
+          </CloseButton>
+        </TitleContainer>
       </ModalTitle>
       <ModalContainer onSubmit={reportFormik.handleSubmit}>
         <Directions>
