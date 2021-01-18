@@ -11,7 +11,11 @@ import "@brainhubeu/react-carousel/lib/style.css";
 Modal.setAppElement("#root");
 
 const ModalTitle = styled.div`
-  ${tw`fixed w-4/5 flex items-center justify-center h-12 border-b font-semibold bg-white rounded-t-lg`}
+  ${tw`fixed w-4/5 h-12 border-b font-semibold bg-white rounded-t-lg`}
+`;
+
+const TitleContainer = styled.div`
+  ${tw`w-full h-full relative flex items-center justify-center rounded-t-lg`}
 `;
 
 const CloseButton = styled.div`
@@ -101,10 +105,12 @@ const PosterModal = ({ dogImg, thread, modalIsOpen, closeModal }) => {
       overlayClassName="Overlay flex justify-center items-center"
     >
       <ModalTitle>
-        迷子情報
-        <CloseButton onClick={() => closeModal()}>
-          <X size={30} className="text-gray-600 cursor-pointer" />
-        </CloseButton>
+        <TitleContainer>
+          <span>迷子情報</span>
+          <CloseButton onClick={() => closeModal()}>
+            <X size={30} className="text-gray-600 cursor-pointer" />
+          </CloseButton>
+        </TitleContainer>
       </ModalTitle>
       <ModalContainer>
         <div className="border-4 border-secondary-light rounded-lg">
